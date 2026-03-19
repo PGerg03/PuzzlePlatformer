@@ -1,0 +1,145 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class MenuController : MonoBehaviour
+{
+    #region "Menu Variables"
+    [SerializeField] private GameObject MainMenu;
+    [SerializeField] private Button PlayButton;
+    [SerializeField] private Button SettingsButton;
+    [SerializeField] private Button Placeholder;
+    [SerializeField] private Button ExitButton;
+    [SerializeField] private Text ButtonInfoText;
+
+    [SerializeField] private GameObject PlayMenu;
+    [SerializeField] private Button Singleplayer;
+    [SerializeField] private Button Multiplayer;
+
+    [SerializeField] private GameObject SettingsMenu;
+    [SerializeField] private Slider MainSoundSlider;
+    [SerializeField] private Dropdown Windowmodedropdown;
+    [SerializeField] private Dropdown Resolutiondropdown;
+    #endregion
+    private Game game;
+
+    void Start()
+    {
+        game = gameObject.GetComponent<Game>();
+        
+        List<Dropdown.OptionData> res = new();
+        for (int i = 0; i < Screen.resolutions.Count(); i++)
+        {
+            Dropdown.OptionData data = new(Screen.resolutions[i].ToString().Split('@')[0]);
+            res.Add(data);
+        }
+        res.Reverse();
+
+        Resolutiondropdown.ClearOptions();
+        Resolutiondropdown.AddOptions(res);
+
+        MainSoundSlider.value = game.MainVolume;
+        Windowmodedropdown.value = game.WindowMode;
+        Resolutiondropdown.value = game.Resolution;
+
+        string[] seged = Resolutiondropdown.options[game.Resolution].text.Split('x');
+        int[] screensize =
+        {
+            Convert.ToInt32(seged[0]),
+            Convert.ToInt32(seged[1])
+        };
+
+        Screen.SetResolution(screensize[0], screensize[1], game.WindowMode != 2);
+    }
+
+    public void OnHoverStart(string buttontag)
+    {
+        ChangeInfoPanel(buttontag);
+    }
+    public void OnHoverEnd()
+    {
+        ChangeInfoPanel("Off");
+    }
+    private void ChangeInfoPanel(string input)
+    {
+        switch (input)
+        {
+            case "Off":
+                ButtonInfoText.text = "";
+                break;
+            case "Play":
+                ButtonInfoText.text = "A Játék gombon van az egér!";
+                break;
+            case "Settings":
+                ButtonInfoText.text = "A Beállítások gombon van az egér!";
+                break;
+            case "Placeholder":
+
+                break;
+            case "Exit":
+                ButtonInfoText.text = "A Kilépés gombon van az egér!";
+                break;
+        }
+    }
+    public void PlayClick()
+    {
+        PlayMenu.SetActive(true);
+    }
+    public void SettingsClick()
+    {
+        SettingsMenu.SetActive(true);
+        MainMenu.SetActive(false);
+    }
+    public void BackClick()
+    {
+        SettingsMenu.SetActive(false);
+        PlayMenu.SetActive(false);
+        MainMenu.SetActive(true);
+    }
+    public void QuitClick()
+    {
+        game.SaveOptions();
+        Application.Quit();
+    }
+
+    public async void StartGame(int playercount)
+    {
+        if (playercount == 1) // SinglePlayer
+        {
+            game.SaveOptions();
+            await SceneLoader.Instance.LoadScene(1);
+        }
+        else // MultiPlayer
+        {
+            game.SaveOptions();
+            await SceneLoader.Instance.LoadScene(2);
+        }
+    }
+
+    public void SettingsChange(float v)
+    {
+        game.MainVolume = v;
+    }
+    public void SettingsChange(int v)
+    {
+        game.WindowMode = Windowmodedropdown.value;
+        game.Resolution = Resolutiondropdown.value;
+
+        string[] seged = Resolutiondropdown.options[game.Resolution].text.Split('x');
+        int[] screensize =
+        {
+            Convert.ToInt32(seged[0]),
+            Convert.ToInt32(seged[1])
+        };
+
+        Screen.SetResolution(screensize[0], screensize[1], game.WindowMode != 2);
+    }
+
+    void Update()
+    {
+
+    }
+}
