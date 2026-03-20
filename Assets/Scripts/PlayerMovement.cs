@@ -42,11 +42,12 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(Jump) rg.AddForce(new Vector2(rg.velocity.x, JumpPower * 10));
-        if(Move) rg.velocity = new Vector2(MovePower * 5, rg.velocity.y);
-
-        Move = false;
+        if(Jump) rg.AddForce(new Vector2(0, JumpPower * 10));
         Jump = false;
+
+        if(Move) rg.velocity = new Vector2(MovePower * 5, rg.velocity.y);
+        Move = false;
+
     }
 
     public bool isGrounded()

@@ -30,28 +30,33 @@ public class Game : MonoBehaviour
     public int CurrentMap;
     public string CurrentStory;
 
-    [Header("GameMenu")]
+    [Header("Game")]
     [SerializeField] private Button[] MapButtons;
     [SerializeField] private GameObject[] Maps;
     [SerializeField] private Camera MainCamera;
     [SerializeField] private Camera MapCamera;
 
-    [Header("PauseMenu")]
+    [Header("MenuPause")]
+    [SerializeField] private GameObject MenuPausePanel;
+    [SerializeField] private GameObject MenuPauseMenu;
+    [SerializeField] private GameObject MenuSettingsMenu;
+    [Header("Pause")]
     [SerializeField] private GameObject PausePanel;
     [SerializeField] private GameObject PauseMenu;
     [SerializeField] private Button[] PauseMenuButtons;
     [SerializeField] private GameObject StoryPanel;
     [SerializeField] private Text StoryText;
 
-    [Header("OptionsMenu")]
+    [Header("Options")]
     [SerializeField] private GameObject OptionsPanel;
     [SerializeField] private Slider MainSoundSlider;
     [SerializeField] private Dropdown Windowmodedropdown;
     [SerializeField] private Dropdown Resolutiondropdown;
     [SerializeField] private Dropdown StoryOptions;
     
-    [Header("CompleteMenu")]
+    [Header("Complete")]
     [SerializeField] private GameObject CompletePanel;
+    [SerializeField] private GameObject LostPanel;
     [SerializeField] private Button[] CompletePanelButtons;
     
     [Header("Player Variables")]
@@ -136,6 +141,10 @@ public class Game : MonoBehaviour
                 MapButtons[i].enabled = true;
             }
         }
+        
+        MenuPausePanel.SetActive(false);
+        MenuPauseMenu.SetActive(false);
+        MenuSettingsMenu.SetActive(false);
 
         player1Movement = Player1.GetComponent<PlayerMovement>();
         player1Movement.PlayerAxes = "P1Horizontal";
@@ -202,7 +211,7 @@ public class Game : MonoBehaviour
     // Story Functions
     public void LoadStory()
     {
-        if(Story == 1 || Story == 0 && SingleStoryCount < SingleUnlockedMaps) // Always or First time
+        if(Story == 2 || Story == 0 && SingleStoryCount < SingleUnlockedMaps) // Always or First time
         {
             StoryText.text = CurrentStory;
             StoryPanel.SetActive(true);
@@ -231,18 +240,29 @@ public class Game : MonoBehaviour
 
         inGame = !on;
     }
+    public void MenuPause(bool on)
+    {
+        MenuPausePanel.SetActive(on);
+        MenuPauseMenu.SetActive(on);
+
+        // inGame = !on;
+    }
     /// <param name="on">true to open, false to close</param>
     public void OptionsMenu(bool on)
     {
         PauseMenu.SetActive(!on);
+        MenuPauseMenu.SetActive(!on);
         OptionsPanel.SetActive(on);
+        MenuSettingsMenu.SetActive(on);
     }
     public void ResetCurrentMap()
     {
         TileMapController.instance.LoadMap(CurrentMap+1, SinglePlayer ? "Single" : "Multy");
 
         CompletePanel.SetActive(false);
+        LostPanel.SetActive(false);
         PausePanel.SetActive(false);
+        MenuPausePanel.SetActive(false);
         OptionsPanel.SetActive(false);
         
         inGame = true;
@@ -304,6 +324,13 @@ public class Game : MonoBehaviour
 
         PausePanel.SetActive(true);
         CompletePanel.SetActive(true);
+
+        inGame = false;
+    }
+    public void LoseLevel()
+    {
+        PausePanel.SetActive(true);
+        LostPanel.SetActive(true);
 
         inGame = false;
     }

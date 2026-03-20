@@ -91,7 +91,7 @@ public class SpecialTiles : MonoBehaviour
     {
         Rigidbody2D rg = Player.GetComponent<Rigidbody2D>();
 
-        rg.AddForce(new Vector2(rg.velocity.x, JumpPadPower * 100));
+        rg.velocity = new Vector2(rg.velocity.x, JumpPadPower);
     }
 
     #endregion
