@@ -23,6 +23,7 @@ public class TileMapController : MonoBehaviour
         else Destroy(this);
     }
 
+    #region Edit
     void Update()
     {
         Vector3 mousePos = Input.mousePosition;
@@ -44,7 +45,6 @@ public class TileMapController : MonoBehaviour
             SaveMap();
         }
     }
-    #region Edit
     public bool EditMode = true;
     public string SaveName = "SingleLevel1";
 
@@ -109,6 +109,7 @@ public class TileMapController : MonoBehaviour
         }
 
         SpecialTiles.instance.LoadSpecialTiles(data.specialTiles);
+        MechanicController.instance.LoadMechanicTiles(data.buttonsData, data.gatesData);
         
         Player1.transform.localPosition = data.Player1Pos;
         if(!Player2.IsUnityNull()) 
@@ -130,6 +131,8 @@ public class LevelData
     public List<int> posx = new();
     public List<int> posy = new();
     public SpecialTilesData specialTiles = new();
+    public ButtonsData buttonsData = new();
+    public GatesData gatesData = new();
 }
 
 [System.Serializable]
@@ -137,4 +140,19 @@ public class SpecialTilesData
 {
     public List<string> tiles = new();
     public List<Vector3Int> pos = new();
+}
+
+[System.Serializable]
+public class ButtonsData
+{
+    public List<string> buttons = new();
+    public List<Vector3Int> pos = new();
+    public List<List<int>> gatesIndex = new();
+}
+
+[System.Serializable]
+public class GatesData
+{
+    public List<string> gates = new();
+    public List<Transform> trans = new();
 }
