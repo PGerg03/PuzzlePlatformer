@@ -11,7 +11,7 @@ public class SpecialTiles : MonoBehaviour
     [SerializeField] Tilemap tilemap;
     public int JumpPadPower = 5;
     public List<CustomTile> tiles = new();
-    public SpecialTilesData LoadadSpecialTiles = new();
+    public List<SpecialTileData> LoadadSpecialTiles = new();
 
     public static SpecialTiles instance;
     #endregion
@@ -33,11 +33,13 @@ public class SpecialTiles : MonoBehaviour
             {
                 TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
                 CustomTile temptile = tiles.Find(t => t.tile == temp);
+                SpecialTileData tempdata = new();
 
                 if(temptile != null)
                 {
-                    LoadadSpecialTiles.tiles.Add(temptile.tileName);
-                    LoadadSpecialTiles.pos.Add(new Vector3Int(x, y, 0));
+                    tempdata.tile = temptile.tileName;
+                    tempdata.pos = new Vector3Int(x, y, 0);
+                    LoadadSpecialTiles.Add(tempdata);
                 }
             }
         }
@@ -58,13 +60,13 @@ public class SpecialTiles : MonoBehaviour
 
         string CollidedBlock = "";
 
-        for (int i = 0; i < LoadadSpecialTiles.tiles.Count; i++)
+        for (int i = 0; i < LoadadSpecialTiles.Count; i++)
         {
-            float distance = (Player.transform.localPosition - LoadadSpecialTiles.pos[i]).sqrMagnitude;
+            float distance = (Player.transform.localPosition - LoadadSpecialTiles[i].pos).sqrMagnitude;
 
             if(distance < 4f)
             {
-                CollidedBlock = LoadadSpecialTiles.tiles[i];
+                CollidedBlock = LoadadSpecialTiles[i].tile;
                 Debug.Log(CollidedBlock);
                 break;
             }
@@ -96,36 +98,38 @@ public class SpecialTiles : MonoBehaviour
 
     #endregion
     #region Save - Load
-    public SpecialTilesData SaveSpecialTiles()
+    public List<SpecialTileData> SaveSpecialTiles()
     {
         BoundsInt bounds = tilemap.cellBounds;
-        SpecialTilesData data = new();
+        List<SpecialTileData> data = new();
         for(int x = bounds.min.x; x < bounds.max.x; x++)
         {
             for(int y = bounds.min.y; y < bounds.max.y; y++)
             {
                 TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
                 CustomTile temptile = tiles.Find(t => t.tile == temp);
+                SpecialTileData tempdata = new();
 
                 if(temptile != null)
                 {
-                    data.tiles.Add(temptile.tileName);
-                    data.pos.Add(new Vector3Int(x, y, 0));
+                    tempdata.tile = temptile.tileName;
+                    tempdata.pos = new Vector3Int(x, y, 0);
+                    data.Add(tempdata);
                 }
             }
         }
 
         return data;
     }
-    public void LoadSpecialTiles(SpecialTilesData data)
+    public void LoadSpecialTiles(List<SpecialTileData> data)
     {
         LoadadSpecialTiles = data;
 
         tilemap.ClearAllTiles();
 
-        for (int i = 0; i < data.tiles.Count; i++)
+        for (int i = 0; i < data.Count; i++)
         {
-            tilemap.SetTile(data.pos[i], tiles.Find(t => t.tileName == data.tiles[i]).tile);
+            tilemap.SetTile(data[i].pos, tiles.Find(t => t.tileName == data[i].tile).tile);
         }
     }
     #endregion

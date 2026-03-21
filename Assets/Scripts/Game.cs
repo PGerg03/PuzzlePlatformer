@@ -40,6 +40,7 @@ public class Game : MonoBehaviour
     [SerializeField] private GameObject MenuPausePanel;
     [SerializeField] private GameObject MenuPauseMenu;
     [SerializeField] private GameObject MenuSettingsMenu;
+    
     [Header("Pause")]
     [SerializeField] private GameObject PausePanel;
     [SerializeField] private GameObject PauseMenu;
@@ -200,6 +201,7 @@ public class Game : MonoBehaviour
         PauseMenu.SetActive(false);
         OptionsPanel.SetActive(false);
         CompletePanel.SetActive(false);
+        LostPanel.SetActive(false);
 
         CurrentStory = TileMapController.instance.LoadMap(MapNumber+1, SinglePlayer ? "Single" : "Multy");
         

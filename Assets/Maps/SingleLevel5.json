@@ -1,4 +1,5 @@
 {
+    "Story": "",
     "Player1Pos": {
         "x": 12,
         "y": -37,
@@ -36,6 +37,8 @@
         "Desert",
         "Desert",
         "Desert",
+        "Grassy",
+        "Grassy",
         "Grassy",
         "Grassy",
         "Grassy",
@@ -616,6 +619,8 @@
         5,
         5,
         5,
+        5,
+        6,
         6,
         6,
         6,
@@ -1023,6 +1028,7 @@
         -27,
         -26,
         -25,
+        -22,
         -21,
         -20,
         -19,
@@ -1033,6 +1039,7 @@
         -34,
         -27,
         -26,
+        -25,
         -22,
         -21,
         -20,
@@ -1239,22 +1246,46 @@
         -20,
         -19
     ],
-    "specialTiles": {
-        "tiles": [
-            "BottomDoor",
-            "TopDoor"
-        ],
-        "pos": [
-            {
+    "specialTiles": [
+        {
+            "tile": "BottomDoor",
+            "pos": {
                 "x": -17,
                 "y": -37,
                 "z": 0
-            },
-            {
+            }
+        },
+        {
+            "tile": "TopDoor",
+            "pos": {
                 "x": -17,
                 "y": -36,
                 "z": 0
             }
-        ]
-    }
+        }
+    ],
+    "buttonsData": [
+        {
+            "button": "GreenButton",
+            "pos": {
+                "x": 16,
+                "y": -38,
+                "z": 0
+            },
+            "gatesIndex": [
+                -1
+            ]
+        }
+    ],
+    "gatesData": [
+        {
+            "gate": "GreenGate",
+            "pos": {
+                "x": 6.0,
+                "y": -23.0,
+                "z": 0.0
+            },
+            "rot": 0
+        }
+    ]
 }

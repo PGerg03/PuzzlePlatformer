@@ -10,8 +10,8 @@ public class MechanicController : MonoBehaviour
     [SerializeField] Tilemap tilemap;
     [SerializeField] List<CustomTile> tiles = new();
     [SerializeField] List<GameObject> gateModels = new();
-    public GatesData Gates = new();
-    public ButtonsData Buttons = new();
+    public List<GateData> Gates = new();
+    public List<ButtonData> Buttons = new();
     public List<GameObject> GateObjects = new();
 
     public static MechanicController instance;
@@ -42,14 +42,14 @@ public class MechanicController : MonoBehaviour
         string CollidedBlock = "";
         List<int> activatedGates = new();
 
-        for (int i = 0; i < Buttons.buttons.Count; i++)
+        for (int i = 0; i < Buttons.Count; i++)
         {
-            float distance = (Player.transform.localPosition - Buttons.pos[i]).sqrMagnitude;
+            float distance = (Player.transform.localPosition - Buttons[i].pos).sqrMagnitude;
 
             if(distance < 4f)
             {
-                CollidedBlock = Buttons.buttons[i];
-                activatedGates.AddRange(Buttons.gatesIndex[i]);
+                CollidedBlock = Buttons[i].button;
+                activatedGates.AddRange(Buttons[i].gatesIndex);
                 Debug.Log(CollidedBlock);
                 break;
             }
@@ -63,39 +63,103 @@ public class MechanicController : MonoBehaviour
                 case "BlueButton" :
                 case "GreenButton" :
                 case "YellowButton" :
-
+                    ActivateButton(activatedGates, false);
                     break;
                 case "RedPressurePlate" :
                 case "BluePressurePlate" :
                 case "GreenPressurePlate" :
                 case "YellowPressurePlate" :
-
+                    ActivateButton(activatedGates, true);
                     break;
                 default: return;
             }
         }
     }
 
+    public void ActivateButton(List<int> activeGate, bool Plate)
+    {
+        if(Plate)
+        {
+            
+        }
+        else
+        {
+            
+        }
+    }
 
-    public void LoadMechanicTiles(ButtonsData bData, GatesData gData)
+    #endregion
+    #region Save & Load
+    public List<ButtonData> SaveButtons()
+    {
+        BoundsInt bounds = tilemap.cellBounds;
+        List<ButtonData> data = new();
+
+        for(int x = bounds.min.x; x < bounds.max.x; x++)
+        {
+            for(int y = bounds.min.y; y < bounds.max.y; y++)
+            {
+                TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
+                CustomTile temptile = tiles.Find(t => t.tile == temp);
+                ButtonData tempdata = new();
+
+                if(temptile != null)
+                {
+                    tempdata.button = temptile.tileName;
+                    tempdata.pos = new Vector3Int(x, y, 0);
+                    tempdata.gatesIndex.Add(-1);
+                    data.Add(tempdata);
+                }
+            }
+        }
+
+        return data;
+    }
+
+    public List<GateData> SaveGates()
+    {
+        List<GateData> data = new();
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            GateData tempdata = new();
+
+            Transform child = transform.GetChild(i);
+            tempdata.gate = child.name;
+            tempdata.pos = child.localPosition;
+            tempdata.rot = (int)child.transform.rotation.z;
+            data.Add(tempdata);
+        }
+
+        return data;
+    }
+
+    public void LoadMechanicTiles(List<ButtonData> bData, List<GateData> gData)
     {
         Buttons = bData;
         Gates = gData;
 
         tilemap.ClearAllTiles();
-
-        for (int i = 0; i < bData.buttons.Count; i++)
+        for (int i = 0; i < GateObjects.Count; i++)
         {
-            tilemap.SetTile(bData.pos[i], tiles.Find(t => t.tileName == bData.buttons[i]).tile);
+            Destroy(GateObjects[i]);
         }
-        for (int i = 0; i < gData.gates.Count; i++)
-        {
-            GameObject newGate = gateModels.Find(g => g.name == gData.gates[i]);
-            newGate.transform.position = gData.trans[i].position;
-            newGate.transform.eulerAngles = gData.trans[i].eulerAngles;
+        GateObjects.Clear();
 
-            GateObjects.Add(Instantiate(newGate));
+
+        for (int i = 0; i < bData.Count; i++)
+        {
+            tilemap.SetTile(bData[i].pos, tiles.Find(t => t.tileName == bData[i].button).tile);
+        }
+        for (int i = 0; i < gData.Count; i++)
+        {
+            GameObject newGate = gateModels.Find(g => gData[i].gate.StartsWith(g.name));
+            newGate.transform.position = gData[i].pos;
+            newGate.transform.eulerAngles = new Vector3Int(0, 0, gData[i].rot);
+
+            GateObjects.Add(Instantiate(newGate, transform));
         }
     }
+
+
     #endregion
 }
