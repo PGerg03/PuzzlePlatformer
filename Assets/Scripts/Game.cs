@@ -264,6 +264,7 @@ public class Game : MonoBehaviour
         CompletePanel.SetActive(false);
         LostPanel.SetActive(false);
         PausePanel.SetActive(false);
+        PauseMenu.SetActive(false);
         MenuPausePanel.SetActive(false);
         OptionsPanel.SetActive(false);
         

@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class MechanicController : MonoBehaviour
 {
@@ -25,7 +27,39 @@ public class MechanicController : MonoBehaviour
     
     void Start()
     {
-        
+        //Testing
+        BoundsInt bounds = tilemap.cellBounds;
+
+        for(int x = bounds.min.x; x < bounds.max.x; x++)
+        {
+            for(int y = bounds.min.y; y < bounds.max.y; y++)
+            {
+                TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
+                CustomTile temptile = tiles.Find(t => t.tile == temp);
+                ButtonData tempdata = new();
+
+                if(temptile != null)
+                {
+                    tempdata.button = temptile.tileName;
+                    tempdata.pos = new Vector3Int(x, y, 0);
+                    tempdata.gatesIndex.Add(Buttons.Count);
+                    Buttons.Add(tempdata);
+                }
+            }
+        }
+
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            GateData tempdata = new();
+
+            Transform child = transform.GetChild(i);
+            tempdata.gate = child.name;
+            tempdata.pos = child.localPosition;
+            tempdata.rot = (int)child.transform.eulerAngles.z;
+            Gates.Add(tempdata);
+            GateObjects.Add(child.gameObject);
+        }
+        //Testing
     }
 
     void Update()
@@ -38,54 +72,112 @@ public class MechanicController : MonoBehaviour
         if(collision.gameObject.layer != 0) return;
 
         GameObject Player = collision.gameObject;
+        Vector3 pos = Player.transform.localPosition;
+        pos.y -= 1;
+        pos.x -= 0.5f;
 
-        string CollidedBlock = "";
-        List<int> activatedGates = new();
-
+        float dist = 10;
+        int index = 0;
         for (int i = 0; i < Buttons.Count; i++)
         {
-            float distance = (Player.transform.localPosition - Buttons[i].pos).sqrMagnitude;
+            float distance = (pos - Buttons[i].pos).sqrMagnitude;
 
-            if(distance < 4f)
-            {
-                CollidedBlock = Buttons[i].button;
-                activatedGates.AddRange(Buttons[i].gatesIndex);
-                Debug.Log(CollidedBlock);
-                break;
-            }
+            if(dist > distance) index = i;
+            dist = Math.Min(dist, distance);
         }
 
-        // if(GameScript.SinglePlayer)
+        Debug.Log(dist);
+        string CollidedBlock = Buttons[index].button;
+        ButtonData activatedButton = Buttons[index];
+        Debug.Log("Button: " + activatedButton.pos + ", Player: " + pos);
+        Debug.Log("Enter: " + CollidedBlock);
+
+        Player.GetComponent<PlayerMovement>().LastContact = index;
+
+        int color;
+        switch(CollidedBlock)
         {
-            switch(CollidedBlock)
-            {
-                case "RedButton" :
-                case "BlueButton" :
-                case "GreenButton" :
-                case "YellowButton" :
-                    ActivateButton(activatedGates, false);
-                    break;
-                case "RedPressurePlate" :
-                case "BluePressurePlate" :
-                case "GreenPressurePlate" :
-                case "YellowPressurePlate" :
-                    ActivateButton(activatedGates, true);
-                    break;
-                default: return;
-            }
+            case "BlueButton" :
+            case "BluePressurePlate" :
+                color = 1;
+                break;
+            case "GreenButton" :
+            case "GreenPressurePlate" :
+                color = 2;
+                break;
+            case "RedButton" :
+            case "RedPressurePlate" :
+                color = 3;
+                break;
+            case "YellowButton" :
+            case "YellowPressurePlate" :
+                color = 4;
+                break;
+            default: return;
+        }
+        if(color > 0) ActivateButton(activatedButton, color);
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        if(collision.gameObject.layer != 0) return;
+
+        GameObject Player = collision.gameObject;
+
+        int index = Player.GetComponent<PlayerMovement>().LastContact;
+        if(index < 0) return;
+
+        string CollidedBlock = Buttons[index].button;
+        ButtonData activatedButton = Buttons[index];
+        Debug.Log("Left: " + CollidedBlock);
+
+        int color;
+        switch(CollidedBlock)
+        {
+            case "BluePressurePlate" :
+                color = 1;
+                break;
+            case "GreenPressurePlate" :
+                color = 2;
+                break;
+            case "RedPressurePlate" :
+                color = 3;
+                break;
+            case "YellowPressurePlate" :
+                color = 4;
+                break;
+            default: return;
+        }
+        if(color > 0) DeactivateButton(activatedButton, color);
+    }
+
+    public void ActivateButton(ButtonData activeButton, int color)
+    {
+        ChangeButtonStatus(activeButton.pos, color, true);
+
+        for (int i = 0; i < activeButton.gatesIndex.Count; i++)
+        {
+            int index = activeButton.gatesIndex[i];
+            GateObjects[index].GetComponent<Animator>().SetTrigger("Open");
+        }
+    }
+    
+    public void DeactivateButton(ButtonData deactiveButton, int color)
+    {
+        ChangeButtonStatus(deactiveButton.pos, color, false);
+
+        for (int i = 0; i < deactiveButton.gatesIndex.Count; i++)
+        {
+            int index = deactiveButton.gatesIndex[i];
+            GateObjects[index].GetComponent<Animator>().SetTrigger("Close");
         }
     }
 
-    public void ActivateButton(List<int> activeGate, bool Plate)
+    /// <param name="active">true ha benyomva van, false ha felengedve</param>
+    public void ChangeButtonStatus(Vector3Int pos, int color, bool active)
     {
-        if(Plate)
-        {
-            
-        }
-        else
-        {
-            
-        }
+        if(active) tilemap.SetTile(pos, tiles[7+color].tile);
+        else tilemap.SetTile(pos, tiles[3+color].tile);
     }
 
     #endregion
@@ -126,7 +218,7 @@ public class MechanicController : MonoBehaviour
             Transform child = transform.GetChild(i);
             tempdata.gate = child.name;
             tempdata.pos = child.localPosition;
-            tempdata.rot = (int)child.transform.rotation.z;
+            tempdata.rot = (int)child.transform.eulerAngles.z;
             data.Add(tempdata);
         }
 

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8955926471201511745}
   - component: {fileID: 6337069609260139195}
   - component: {fileID: 6699749334522605035}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: RedGate
   m_TagString: Untagged
   m_Icon: {fileID: 0}

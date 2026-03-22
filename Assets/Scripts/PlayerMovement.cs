@@ -13,7 +13,8 @@ public class PlayerMovement : MonoBehaviour
     public float JumpPower = 35;
 
     public bool Jump = false;
-    public bool Move = false;
+
+    public int LastContact;
 
     [Header("BoxCast")]
     public Vector2 Ground_BoxSize;
@@ -37,7 +38,6 @@ public class PlayerMovement : MonoBehaviour
         MovePower = Input.GetAxisRaw(PlayerAxes);
         if(isLeftWall() && MovePower < 0) MovePower = 0;
         if(isRightWall() && MovePower > 0) MovePower = 0;
-        if(MovePower != 0) Move = true;
     }
 
     void FixedUpdate()
@@ -45,8 +45,8 @@ public class PlayerMovement : MonoBehaviour
         if(Jump) rg.AddForce(new Vector2(0, JumpPower * 10));
         Jump = false;
 
-        if(Move) rg.velocity = new Vector2(MovePower * 5, rg.velocity.y);
-        Move = false;
+        rg.velocity = new Vector2(MovePower * 5, rg.velocity.y);
+        
 
     }
 

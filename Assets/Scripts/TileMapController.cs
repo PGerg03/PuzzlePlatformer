@@ -114,9 +114,12 @@ public class TileMapController : MonoBehaviour
         MechanicController.instance.LoadMechanicTiles(data.buttonsData, data.gatesData);
         
         Player1.transform.localPosition = data.Player1Pos;
+        Player1.GetComponent<PlayerMovement>().LastContact = -1;
         if(!Player2.IsUnityNull()) 
+        {
             Player2.transform.localPosition = data.Player2Pos;
-
+            Player2.GetComponent<PlayerMovement>().LastContact = -1;
+        }
         return data.Story;
     }
 
