@@ -49,6 +49,12 @@ TagManager:
   - name: Background
     uniqueID: 2572921821
     locked: 0
+  - name: Player
+    uniqueID: 2087854283
+    locked: 0
+  - name: Liquid
+    uniqueID: 1167663703
+    locked: 0
   - name: UI
     uniqueID: 2289267931
     locked: 0

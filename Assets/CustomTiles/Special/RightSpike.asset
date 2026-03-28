@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ba0ce9f5ce71f344a93c56643341c4c, type: 3}
-  m_Name: Snowy
+  m_Name: RightSpike
   m_EditorClassIdentifier: 
-  tile: {fileID: 11400000, guid: 4db95717ab27376468bc34a1065924e4, type: 2}
-  tileName: Snowy
+  tile: {fileID: 11400000, guid: 1eb4388cb9962f14ebdcee65e672b6f6, type: 2}
+  tileName: RightSpike

@@ -166,6 +166,7 @@ public class Game : MonoBehaviour
     {
         player1Movement.enabled = inGame;
         if(!Player2.IsUnityNull()) player2Movement.enabled = inGame;
+        
         if(inGame)
         {
             if(SinglePlayer)

@@ -86,11 +86,8 @@ public class MechanicController : MonoBehaviour
             dist = Math.Min(dist, distance);
         }
 
-        Debug.Log(dist);
         string CollidedBlock = Buttons[index].button;
         ButtonData activatedButton = Buttons[index];
-        Debug.Log("Button: " + activatedButton.pos + ", Player: " + pos);
-        Debug.Log("Enter: " + CollidedBlock);
 
         Player.GetComponent<PlayerMovement>().LastContact = index;
 

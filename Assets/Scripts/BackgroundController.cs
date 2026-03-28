@@ -1,19 +1,18 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class SpecialTiles : MonoBehaviour
+public class BackgroundController : MonoBehaviour
 {
+    
     #region Variables
     [SerializeField] Game GameScript;
     [SerializeField] Tilemap tilemap;
-    public int JumpPadPower = 5;
     public List<CustomTile> tiles = new();
-    public List<DefTileData> LoadadSpecialTiles = new();
+    public List<DefTileData> LoadadBackgroundTiles = new();
 
-    public static SpecialTiles instance;
+    public static BackgroundController instance;
     #endregion
     #region Functions
     void Awake()
@@ -39,12 +38,12 @@ public class SpecialTiles : MonoBehaviour
                 {
                     tempdata.tile = temptile.tileName;
                     tempdata.pos = new Vector3Int(x, y, 0);
-                    LoadadSpecialTiles.Add(tempdata);
+                    LoadadBackgroundTiles.Add(tempdata);
                 }
             }
         }
         // Testing
-
+        
     }
 
     void Update()
@@ -52,63 +51,9 @@ public class SpecialTiles : MonoBehaviour
         
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.gameObject.layer != 0) return;
-
-        GameObject Player = collision.gameObject;
-        Vector3 pos = Player.transform.localPosition;
-        pos.y -= 1;
-        pos.x -= 0.5f;
-
-        float dist = 10;
-        int index = 0;
-        for (int i = 0; i < LoadadSpecialTiles.Count; i++)
-        {
-            float distance = (pos - LoadadSpecialTiles[i].pos).sqrMagnitude;
-
-            if(dist > distance) index = i;
-            dist = Math.Min(dist, distance);
-        }
-        string CollidedBlock = LoadadSpecialTiles[index].tile;
-
-        if(GameScript.SinglePlayer)
-        {
-            switch(CollidedBlock)
-            {
-                case "TopDoor":
-                case "BottomDoor":
-                    GameScript.CompleteLevel();
-                    break;
-                case "JumpPad":
-                    JumpPadJump(Player);
-                    break;
-                case "TopSpike":
-                case "BottomSpike":
-                case "LeftSpike" :
-                case "RightSpike" :
-                    SpikeHit();
-                    break;
-                default: return;
-            }
-        }
-    }
-
-    public void JumpPadJump(GameObject Player)
-    {
-        Rigidbody2D rg = Player.GetComponent<Rigidbody2D>();
-
-        rg.velocity = new Vector2(rg.velocity.x, JumpPadPower);
-    }
-
-    public void SpikeHit()
-    {
-        GameScript.LoseLevel();
-    }
-
     #endregion
     #region Save - Load
-    public List<DefTileData> SaveSpecialTiles()
+    public List<DefTileData> SaveBackTiles()
     {
         BoundsInt bounds = tilemap.cellBounds;
         List<DefTileData> data = new();
@@ -131,9 +76,10 @@ public class SpecialTiles : MonoBehaviour
 
         return data;
     }
-    public void LoadSpecialTiles(List<DefTileData> data)
+
+    public void LoadBackTiles(List<DefTileData> data)
     {
-        LoadadSpecialTiles = data;
+        LoadadBackgroundTiles = data;
 
         tilemap.ClearAllTiles();
 
@@ -142,5 +88,6 @@ public class SpecialTiles : MonoBehaviour
             tilemap.SetTile(data[i].pos, tiles.Find(t => t.tileName == data[i].tile).tile);
         }
     }
+    
     #endregion
 }

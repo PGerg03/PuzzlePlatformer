@@ -8,6 +8,7 @@ using UnityEngine.Tilemaps;
 
 public class TileMapController : MonoBehaviour
 {
+    [SerializeField] Game GameScript;
     [SerializeField] TileBase CurrentTile;
     [SerializeField] Camera cam;
     [SerializeField] Tilemap tilemap;
@@ -48,7 +49,8 @@ public class TileMapController : MonoBehaviour
 
     void FixedUpdate()
     {
-        Player1.GetComponent<Rigidbody2D>().simulated = !EditMode;
+        if(EditMode) GameScript.inGame = false;
+        Player1.GetComponent<Rigidbody2D>().simulated = GameScript.inGame;
     }
     // private void PlaceTile(Vector3Int pos)
     // {
@@ -112,6 +114,8 @@ public class TileMapController : MonoBehaviour
 
         SpecialTiles.instance.LoadSpecialTiles(data.specialTiles);
         MechanicController.instance.LoadMechanicTiles(data.buttonsData, data.gatesData);
+        WaterController.instance.LoadWaterTiles(data.waterData);
+        BackgroundController.instance.LoadBackTiles(data.backgroundData);
         
         Player1.transform.localPosition = data.Player1Pos;
         Player1.GetComponent<PlayerMovement>().LastContact = -1;
@@ -135,13 +139,15 @@ public class LevelData
     public List<string> tiles = new();
     public List<int> posx = new();
     public List<int> posy = new();
-    public List<SpecialTileData> specialTiles = new();
+    public List<DefTileData> backgroundData = new();
+    public List<DefTileData> specialTiles = new();
     public List<ButtonData> buttonsData = new();
     public List<GateData> gatesData = new();
+    public List<DefTileData> waterData = new();
 }
 
 [System.Serializable]
-public class SpecialTileData
+public class DefTileData
 {
     public string tile = "";
     public Vector3Int pos = new();
