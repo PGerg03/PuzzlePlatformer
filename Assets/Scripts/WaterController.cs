@@ -55,6 +55,12 @@ public class WaterController : MonoBehaviour
     #region Save - Load
     public List<DefTileData> SaveWaterTiles()
     {
+        if(LoadadWaterTiles.Count < 1) ReloadMap();
+
+        return LoadadWaterTiles;
+    }
+    public void ReloadMap()
+    {
         BoundsInt bounds = tilemap.cellBounds;
         List<DefTileData> data = new();
         for(int x = bounds.min.x; x < bounds.max.x; x++)
@@ -74,7 +80,7 @@ public class WaterController : MonoBehaviour
             }
         }
 
-        return data;
+        LoadadWaterTiles = data;
     }
 
     public void LoadWaterTiles(List<DefTileData> data)

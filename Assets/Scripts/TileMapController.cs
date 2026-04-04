@@ -12,8 +12,7 @@ public class TileMapController : MonoBehaviour
     [SerializeField] TileBase CurrentTile;
     [SerializeField] Camera cam;
     [SerializeField] Tilemap tilemap;
-    [SerializeField] GameObject Player1;
-    [SerializeField] GameObject Player2;
+    public List<GameObject> Players;
 
     public List<CustomTile> tiles = new();
     
@@ -24,43 +23,29 @@ public class TileMapController : MonoBehaviour
         else Destroy(this);
     }
 
-    #region Edit
-    void Update()
-    {
-        // Vector3 mousePos = Input.mousePosition;
-        // mousePos.z = Mathf.Abs(cam.transform.position.z - tilemap.transform.position.z);
-        // Vector3Int pos = tilemap.WorldToCell(cam.ScreenToWorldPoint(mousePos));
-        // if(EditMode && Input.GetMouseButton(0))
-        // {
-        //     PlaceTile(pos);
-        // }
-        // if(EditMode && Input.GetMouseButton(1))
-        // {
-        //     DeleteTile(pos);
-        // }
-
-        if(EditMode && Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.L))
-        {
-            SaveMap();
-        }
-    }
-    public bool EditMode = true;
-    public string SaveName = "SingleLevel1";
-
     void FixedUpdate()
     {
         if(EditMode) GameScript.inGame = false;
-        Player1.GetComponent<Rigidbody2D>().simulated = GameScript.inGame;
+        Players.ForEach(p => p.GetComponent<Rigidbody2D>().simulated = GameScript.inGame);
     }
-    // private void PlaceTile(Vector3Int pos)
-    // {
-    //     tilemap.SetTile(pos, CurrentTile);
-    // }
-    // private void DeleteTile(Vector3Int pos)
-    // {
-    //     tilemap.SetTile(pos, null);
-    // }
-    
+
+    #region Edit
+    void Update()
+    {
+        if(EditMode && Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.F)) SaveMap();
+        if(EditMode && Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.R)) ReloadMaps();
+        
+    }
+    public bool EditMode = true;
+    public string SaveName = "SingleLevel1";
+    private void ReloadMaps()
+    {
+        SpecialTiles.instance.ReloadMap();
+        MechanicController.instance.ReloadMap();
+        WaterController.instance.ReloadMap();
+        BackgroundController.instance.ReloadMap();
+    }
+
     private void SaveMap()
     {
         BoundsInt bounds = tilemap.cellBounds;
@@ -73,21 +58,24 @@ public class TileMapController : MonoBehaviour
             {
                 TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
                 CustomTile temptile = tiles.Find(t => t.tile == temp);
-
+                DefTileData maintile = new();
 
                 if(temptile != null)
                 {
-                    levelData.tiles.Add(temptile.tileName);
-                    levelData.posx.Add(x);
-                    levelData.posy.Add(y);
+                    maintile.pos = new Vector3Int(x,y,0);
+                    maintile.tile = temptile.tileName;
+                    levelData.MaintileData.Add(maintile);
                 }
             }
         }
-        levelData.Player1Pos = new Vector3Int((int)Player1.transform.position.x, (int)Player1.transform.position.y, 0);
+
+        Players.ForEach(p => levelData.PlayersPos.Add(new Vector3Int((int)p.transform.position.x, (int)p.transform.position.y, 0)));
 
         levelData.specialTiles = SpecialTiles.instance.SaveSpecialTiles();
         levelData.buttonsData = MechanicController.instance.SaveButtons();
         levelData.gatesData = MechanicController.instance.SaveGates();
+        levelData.waterData = WaterController.instance.SaveWaterTiles();
+        levelData.backgroundData = BackgroundController.instance.SaveBackTiles();
 
         string json = JsonUtility.ToJson(levelData, true);
         File.WriteAllText(Application.dataPath + $"/Maps/{SaveName}.json", json);
@@ -107,9 +95,9 @@ public class TileMapController : MonoBehaviour
 
         tilemap.ClearAllTiles();
 
-        for (int i = 0; i < data.tiles.Count; i++)
+        for (int i = 0; i < data.MaintileData.Count; i++)
         {
-            tilemap.SetTile(new Vector3Int(data.posx[i], data.posy[i], 0), tiles.Find(t => t.tileName == data.tiles[i]).tile);
+            tilemap.SetTile(new Vector3Int(data.MaintileData[i].pos.x, data.MaintileData[i].pos.y, 0), tiles.Find(t => t.tileName == data.MaintileData[i].tile).tile);
         }
 
         SpecialTiles.instance.LoadSpecialTiles(data.specialTiles);
@@ -117,28 +105,29 @@ public class TileMapController : MonoBehaviour
         WaterController.instance.LoadWaterTiles(data.waterData);
         BackgroundController.instance.LoadBackTiles(data.backgroundData);
         
-        Player1.transform.localPosition = data.Player1Pos;
-        Player1.GetComponent<PlayerMovement>().LastContact = -1;
-        if(!Player2.IsUnityNull()) 
+        for (int i = 0; i < data.PlayersPos.Count; i++)
         {
-            Player2.transform.localPosition = data.Player2Pos;
-            Player2.GetComponent<PlayerMovement>().LastContact = -1;
+            if(Players.Count == i)
+            {
+                Players.Add(GameScript.CreateNextPlayer(i));
+            }
+            Players[i].transform.localPosition = data.PlayersPos[i];
+            Players[i].GetComponent<PlayerMovement>().LastContact = -1;
         }
+
         return data.Story;
     }
 
     #endregion
 }
 
+#region DataClasses
 [System.Serializable]
 public class LevelData
 {
     public string Story;
-    public Vector3Int Player1Pos;
-    public Vector3Int Player2Pos;
-    public List<string> tiles = new();
-    public List<int> posx = new();
-    public List<int> posy = new();
+    public List<Vector3Int> PlayersPos = new();
+    public List<DefTileData> MaintileData = new();
     public List<DefTileData> backgroundData = new();
     public List<DefTileData> specialTiles = new();
     public List<ButtonData> buttonsData = new();
@@ -168,3 +157,5 @@ public class GateData
     public Vector3 pos = new();
     public int rot = 0;
 }
+
+#endregion

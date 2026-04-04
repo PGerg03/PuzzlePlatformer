@@ -2,10 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
+public enum PlayerType
+{
+    Nature,
+    Desert,
+    Ice,
+}
+
+[RequireComponent(typeof(Rigidbody2D),typeof(SpriteRenderer))]
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rg;
+    private SpriteRenderer sr;
+    [SerializeField] private Sprite RightModel;
+    [SerializeField] private Sprite LeftModel;
+    public PlayerType Type;
+    public bool Active = false;
 
     public string PlayerAxes;
     public KeyCode JumpCode;
@@ -31,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rg = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
     }
 
     void Update()
@@ -41,26 +54,30 @@ public class PlayerMovement : MonoBehaviour
         }
 
         MovePower = Input.GetAxisRaw(PlayerAxes);
+        if(MovePower > 0) sr.sprite = RightModel;
+        if(MovePower < 0) sr.sprite = LeftModel;
         if(isLeftWall() && MovePower < 0) MovePower = 0;
         if(isRightWall() && MovePower > 0) MovePower = 0;
     }
 
     void FixedUpdate()
     {
-        if(UnderWater)
+        if(Active)
         {
-            if(Jump) rg.AddForce(new Vector2(0, JumpPower * 4));
-            rg.velocity = new Vector2(MovePower * 2, rg.velocity.y);
-            rg.gravityScale = 0.5f;
+            if(UnderWater)
+            {
+                if(Jump) rg.AddForce(new Vector2(0, JumpPower * 4));
+                rg.velocity = new Vector2(MovePower * 2, rg.velocity.y);
+                rg.gravityScale = 0.5f;
+            }
+            else 
+            {
+                if(Jump) rg.AddForce(new Vector2(0, JumpPower * 10));
+                rg.velocity = new Vector2(MovePower * 5, rg.velocity.y);
+                rg.gravityScale = 2f;
+            }
+            Jump = false;
         }
-        else 
-        {
-            if(Jump) rg.AddForce(new Vector2(0, JumpPower * 10));
-            rg.velocity = new Vector2(MovePower * 5, rg.velocity.y);
-            rg.gravityScale = 2f;
-        }
-        Jump = false;
-
     }
 
     public bool isGrounded()
@@ -71,8 +88,7 @@ public class PlayerMovement : MonoBehaviour
         }
         return false;
     }
-    
-    public bool inWater()
+        public bool inWater()
     {
         if(Physics2D.BoxCast(transform.position, Water_BoxSize, 0, -transform.up, Water_CastDistance, LayerWater))
         {
@@ -80,19 +96,17 @@ public class PlayerMovement : MonoBehaviour
         }
         return false;
     }
-
     public bool isLeftWall()
     {
-        if(Physics2D.BoxCast(transform.position - transform.up * 0.142f, Wall_BoxSize, 0, -transform.right, Wall_CastDistance, LayerGround))
+        if(Physics2D.BoxCast(transform.position - transform.up * 0.01f, Wall_BoxSize, 0, -transform.right, Wall_CastDistance, LayerGround))
         {
             return true;
         }
         return false;
     }
-    
-    public bool isRightWall()
+        public bool isRightWall()
     {
-        if(Physics2D.BoxCast(transform.position - transform.up * 0.142f, Wall_BoxSize, 0, transform.right, Wall_CastDistance, LayerGround))
+        if(Physics2D.BoxCast(transform.position - transform.up * 0.01f, Wall_BoxSize, 0, transform.right, Wall_CastDistance, LayerGround))
         {
             return true;
         }
@@ -103,8 +117,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Gizmos.DrawWireCube(transform.position - transform.up * Ground_CastDistance, Ground_BoxSize);
         Gizmos.DrawWireCube(transform.position - transform.up * Water_CastDistance, Water_BoxSize);
-        // Recalculate for Player Model when have
-        Gizmos.DrawWireCube((transform.position - transform.up * 0.142f) - transform.right * Wall_CastDistance, Wall_BoxSize);
-        Gizmos.DrawWireCube((transform.position - transform.up * 0.142f) + transform.right * Wall_CastDistance, Wall_BoxSize);
+        Gizmos.DrawWireCube(transform.position - transform.up * 0.01f - transform.right * Wall_CastDistance, Wall_BoxSize);
+        Gizmos.DrawWireCube(transform.position - transform.up * 0.01f + transform.right * Wall_CastDistance, Wall_BoxSize);
     }
 }

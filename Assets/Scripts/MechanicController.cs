@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
@@ -126,7 +127,6 @@ public class MechanicController : MonoBehaviour
 
         string CollidedBlock = Buttons[index].button;
         ButtonData activatedButton = Buttons[index];
-        Debug.Log("Left: " + CollidedBlock);
 
         int color;
         switch(CollidedBlock)
@@ -181,6 +181,20 @@ public class MechanicController : MonoBehaviour
     #region Save & Load
     public List<ButtonData> SaveButtons()
     {
+        if(Buttons.Count < 1) ReloadMap();
+        
+        return Buttons;
+    }
+
+    public List<GateData> SaveGates()
+    {
+        if(Gates.Count < 1) ReloadMap();
+
+        return Gates;
+    }
+
+    public void ReloadMap()
+    {
         BoundsInt bounds = tilemap.cellBounds;
         List<ButtonData> data = new();
 
@@ -202,24 +216,21 @@ public class MechanicController : MonoBehaviour
             }
         }
 
-        return data;
-    }
+        Buttons = data;
 
-    public List<GateData> SaveGates()
-    {
-        List<GateData> data = new();
+        List<GateData> gdata = new();
         for (int i = 0; i < transform.childCount; i++)
         {
-            GateData tempdata = new();
+            GateData tempgdata = new();
 
             Transform child = transform.GetChild(i);
-            tempdata.gate = child.name;
-            tempdata.pos = child.localPosition;
-            tempdata.rot = (int)child.transform.eulerAngles.z;
-            data.Add(tempdata);
+            tempgdata.gate = child.name;
+            tempgdata.pos = child.localPosition;
+            tempgdata.rot = (int)child.transform.eulerAngles.z;
+            gdata.Add(tempgdata);
         }
 
-        return data;
+        Gates = gdata;
     }
 
     public void LoadMechanicTiles(List<ButtonData> bData, List<GateData> gData)

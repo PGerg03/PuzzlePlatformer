@@ -110,6 +110,13 @@ public class SpecialTiles : MonoBehaviour
     #region Save - Load
     public List<DefTileData> SaveSpecialTiles()
     {
+        if(LoadadSpecialTiles.Count < 1) ReloadMap();
+
+        return LoadadSpecialTiles;
+    }
+
+    public void ReloadMap()
+    {
         BoundsInt bounds = tilemap.cellBounds;
         List<DefTileData> data = new();
         for(int x = bounds.min.x; x < bounds.max.x; x++)
@@ -129,8 +136,9 @@ public class SpecialTiles : MonoBehaviour
             }
         }
 
-        return data;
+        LoadadSpecialTiles = data;
     }
+    
     public void LoadSpecialTiles(List<DefTileData> data)
     {
         LoadadSpecialTiles = data;

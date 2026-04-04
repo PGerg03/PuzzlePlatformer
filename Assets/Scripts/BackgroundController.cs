@@ -55,6 +55,13 @@ public class BackgroundController : MonoBehaviour
     #region Save - Load
     public List<DefTileData> SaveBackTiles()
     {
+        if(LoadadBackgroundTiles.Count < 1) ReloadMap();
+        
+        return LoadadBackgroundTiles;
+    }
+
+    public void ReloadMap()
+    {
         BoundsInt bounds = tilemap.cellBounds;
         List<DefTileData> data = new();
         for(int x = bounds.min.x; x < bounds.max.x; x++)
@@ -74,9 +81,8 @@ public class BackgroundController : MonoBehaviour
             }
         }
 
-        return data;
+        LoadadBackgroundTiles = data;
     }
-
     public void LoadBackTiles(List<DefTileData> data)
     {
         LoadadBackgroundTiles = data;

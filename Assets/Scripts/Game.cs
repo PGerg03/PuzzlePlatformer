@@ -35,6 +35,7 @@ public class Game : MonoBehaviour
     [SerializeField] private GameObject[] Maps;
     [SerializeField] private Camera MainCamera;
     [SerializeField] private Camera MapCamera;
+    [SerializeField] private Transform PlayersObject;
 
     [Header("MenuPause")]
     [SerializeField] private GameObject MenuPausePanel;
@@ -60,7 +61,16 @@ public class Game : MonoBehaviour
     [SerializeField] private GameObject LostPanel;
     [SerializeField] private Button[] CompletePanelButtons;
     
-    [Header("Player Variables")]
+    [Header("Single Player Variables")]
+    [SerializeField] private List<GameObject> PlayerModels;
+    public GameObject NaturePlayer;
+    public GameObject DesertPlayer;
+    public GameObject IcePlayer;
+    public PlayerMovement NaturePlayerMovement;
+    public PlayerMovement DesertPlayerMovement;
+    public PlayerMovement IcePlayerMovement;
+    
+    [Header("Multy Player Variables")]
     public GameObject Player1;
     public GameObject Player2;
     public PlayerMovement player1Movement;
@@ -132,6 +142,13 @@ public class Game : MonoBehaviour
             {
                 MapButtons[i].enabled = true;
             }
+
+            NaturePlayerMovement = NaturePlayer.GetComponent<PlayerMovement>();
+            NaturePlayerMovement.PlayerAxes = "P1Horizontal";
+            NaturePlayerMovement.JumpCode = KeyCode.W;
+            NaturePlayerMovement.Active = true;
+
+            Tilemap.GetComponent<TileMapController>().Players.Add(NaturePlayer);
         }
         else // MultiPlayer
         {
@@ -141,30 +158,60 @@ public class Game : MonoBehaviour
             {
                 MapButtons[i].enabled = true;
             }
+
+            player1Movement = Player1.GetComponent<PlayerMovement>();
+            player1Movement.PlayerAxes = "P1Horizontal";
+            player1Movement.JumpCode = KeyCode.W;
+            player1Movement.Active = true;
+            player2Movement = Player2.GetComponent<PlayerMovement>();
+            player2Movement.PlayerAxes = "P2Horizontal";
+            player2Movement.JumpCode = KeyCode.UpArrow;
+            player2Movement.Active = true;
+
+            Tilemap.GetComponent<TileMapController>().Players.Add(Player1);
+            Tilemap.GetComponent<TileMapController>().Players.Add(Player2);
         }
         
         MenuPausePanel.SetActive(false);
         MenuPauseMenu.SetActive(false);
         MenuSettingsMenu.SetActive(false);
 
-        player1Movement = Player1.GetComponent<PlayerMovement>();
-        player1Movement.PlayerAxes = "P1Horizontal";
-        player1Movement.JumpCode = KeyCode.W;
-        if(!Player2.IsUnityNull())
-        {
-            player2Movement = Player2.GetComponent<PlayerMovement>();
-            player2Movement.PlayerAxes = "P2Horizontal";
-            player2Movement.JumpCode = KeyCode.UpArrow;
-        }
     }
 
     void Update()
     {
+        if (CurrentMap > 1)
+        {// van másik karakter is
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                NaturePlayerMovement.Active = true;
+                DesertPlayerMovement.Active = false;
+                if (!IcePlayer.IsUnityNull()) IcePlayerMovement.Active = false;
+            } 
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                NaturePlayerMovement.Active = false;
+                DesertPlayerMovement.Active = true;
+                if (!IcePlayer.IsUnityNull()) IcePlayerMovement.Active = false;
+            } 
+            if(CurrentMap > 4)
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    NaturePlayerMovement.Active = false;
+                    DesertPlayerMovement.Active = false;
+                    IcePlayerMovement.Active = true;
+                }
+            }
+        }
     }
 
     void FixedUpdate()
     {
-        player1Movement.enabled = inGame;
+        NaturePlayerMovement.enabled = inGame;
+        if(!DesertPlayer.IsUnityNull()) DesertPlayerMovement.enabled = inGame;
+
+        if(!Player1.IsUnityNull()) player1Movement.enabled = inGame;
         if(!Player2.IsUnityNull()) player2Movement.enabled = inGame;
         
         if(inGame)
@@ -248,7 +295,6 @@ public class Game : MonoBehaviour
         MenuPausePanel.SetActive(on);
         MenuPauseMenu.SetActive(on);
 
-        // inGame = !on;
     }
     /// <param name="on">true to open, false to close</param>
     public void OptionsMenu(bool on)
@@ -350,6 +396,31 @@ public class Game : MonoBehaviour
 
         CompletePanel.SetActive(false);
         PausePanel.SetActive(false);
+    }
+
+    public GameObject CreateNextPlayer(int number)
+    {
+        GameObject newPlayer = new();
+        switch (number)
+        {
+            case 1:
+            newPlayer = Instantiate(PlayerModels[1], PlayersObject);
+            DesertPlayer = newPlayer;
+            DesertPlayerMovement = DesertPlayer.GetComponent<PlayerMovement>();
+            DesertPlayerMovement.PlayerAxes = "P1Horizontal";
+            DesertPlayerMovement.JumpCode = KeyCode.W;
+            return newPlayer;
+            case 2:
+            newPlayer = Instantiate(PlayerModels[2], PlayersObject);
+            IcePlayer = newPlayer;
+            IcePlayerMovement = IcePlayer.GetComponent<PlayerMovement>();
+            IcePlayerMovement.PlayerAxes = "P1Horizontal";
+            IcePlayerMovement.JumpCode = KeyCode.W;
+            return newPlayer;
+            case 3:
+            default:
+            return newPlayer;
+        }
     }
 
     #endregion
