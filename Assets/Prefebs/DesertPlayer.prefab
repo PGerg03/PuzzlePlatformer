@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7165920225890264409}
   - component: {fileID: 25283584922334046}
   - component: {fileID: 2972621754604463328}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: DesertPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}

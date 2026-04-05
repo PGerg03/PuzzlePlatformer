@@ -17,7 +17,7 @@ TagManager:
   - Water
   - UI
   - Special
-  - 
+  - Player
   - 
   - 
   - 
@@ -52,7 +52,7 @@ TagManager:
   - name: Player
     uniqueID: 2087854283
     locked: 0
-  - name: Liquid
+  - name: Foreground
     uniqueID: 1167663703
     locked: 0
   - name: UI

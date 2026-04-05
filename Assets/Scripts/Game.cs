@@ -41,7 +41,7 @@ public class Game : MonoBehaviour
     [SerializeField] private GameObject MenuPausePanel;
     [SerializeField] private GameObject MenuPauseMenu;
     [SerializeField] private GameObject MenuSettingsMenu;
-    
+
     [Header("Pause")]
     [SerializeField] private GameObject PausePanel;
     [SerializeField] private GameObject PauseMenu;
@@ -55,12 +55,12 @@ public class Game : MonoBehaviour
     [SerializeField] private Dropdown Windowmodedropdown;
     [SerializeField] private Dropdown Resolutiondropdown;
     [SerializeField] private Dropdown StoryOptions;
-    
+
     [Header("Complete")]
     [SerializeField] private GameObject CompletePanel;
     [SerializeField] private GameObject LostPanel;
     [SerializeField] private Button[] CompletePanelButtons;
-    
+
     [Header("Single Player Variables")]
     [SerializeField] private List<GameObject> PlayerModels;
     public GameObject NaturePlayer;
@@ -69,7 +69,7 @@ public class Game : MonoBehaviour
     public PlayerMovement NaturePlayerMovement;
     public PlayerMovement DesertPlayerMovement;
     public PlayerMovement IcePlayerMovement;
-    
+
     [Header("Multy Player Variables")]
     public GameObject Player1;
     public GameObject Player2;
@@ -124,11 +124,11 @@ public class Game : MonoBehaviour
         Windowmodedropdown.value = WindowMode;
         Resolutiondropdown.value = Resolution;
         Debug.Log("Options loaded");
-        
-        if(!SceneLoader.Instance.IsUnityNull()) 
+
+        if (!SceneLoader.Instance.IsUnityNull())
             SceneLoader.Instance.LoadFinished();
 
-        
+
         foreach (GameObject map in Maps)
         {
             map.SetActive(false);
@@ -171,7 +171,7 @@ public class Game : MonoBehaviour
             Tilemap.GetComponent<TileMapController>().Players.Add(Player1);
             Tilemap.GetComponent<TileMapController>().Players.Add(Player2);
         }
-        
+
         MenuPausePanel.SetActive(false);
         MenuPauseMenu.SetActive(false);
         MenuSettingsMenu.SetActive(false);
@@ -180,21 +180,60 @@ public class Game : MonoBehaviour
 
     void Update()
     {
-        if (CurrentMap > 1)
-        {// van másik karakter is
+        // Gyorsgombok
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (CurrentMap > -1) // inGame
+            {
+                if (PausePanel.activeSelf)
+                {
+                    if (PauseMenu.activeSelf) Pause(false);
+                    if (OptionsPanel.activeSelf) Back();
+                }
+                else
+                {
+                    Pause(true);
+                }
+            }
+            else // GameMenu
+            {
+                if (PausePanel.activeSelf)
+                {
+                    if (PauseMenu.activeSelf) MenuPause(false);
+                    if (MenuSettingsMenu.activeSelf) Back();
+                }
+                else
+                {
+                    MenuPause(true);
+                }
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (CompletePanel.activeSelf) NextMap();
+            if (LostPanel.activeSelf) ResetCurrentMap();
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            if (CompletePanel.activeSelf || LostPanel.activeSelf || PauseMenu.activeSelf) ResetCurrentMap();
+        }
+
+        // Karakter váltás
+        if (SinglePlayer && CurrentMap > 1)
+        {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 NaturePlayerMovement.Active = true;
                 DesertPlayerMovement.Active = false;
                 if (!IcePlayer.IsUnityNull()) IcePlayerMovement.Active = false;
-            } 
+            }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 NaturePlayerMovement.Active = false;
                 DesertPlayerMovement.Active = true;
                 if (!IcePlayer.IsUnityNull()) IcePlayerMovement.Active = false;
-            } 
-            if(CurrentMap > 4)
+            }
+            if (CurrentMap > 4)
             {
                 if (Input.GetKeyDown(KeyCode.Alpha3))
                 {
@@ -209,26 +248,27 @@ public class Game : MonoBehaviour
     void FixedUpdate()
     {
         NaturePlayerMovement.enabled = inGame;
-        if(!DesertPlayer.IsUnityNull()) DesertPlayerMovement.enabled = inGame;
+        if (!DesertPlayer.IsUnityNull()) DesertPlayerMovement.enabled = inGame;
+        if (!IcePlayer.IsUnityNull()) IcePlayerMovement.enabled = inGame;
 
-        if(!Player1.IsUnityNull()) player1Movement.enabled = inGame;
-        if(!Player2.IsUnityNull()) player2Movement.enabled = inGame;
-        
-        if(inGame)
+        if (!Player1.IsUnityNull()) player1Movement.enabled = inGame;
+        if (!Player2.IsUnityNull()) player2Movement.enabled = inGame;
+
+        if (inGame)
         {
-            if(SinglePlayer)
+            if (SinglePlayer)
             {
 
             }
             else // MultyPlayer
             {
-                
+
             }
         }
     }
 
     #endregion
-    #region Menu Fucntions
+    #region Menu Functions
 
     // Game Menu Function
     public void ChangeToMapCamera(int MapNumber)
@@ -238,7 +278,7 @@ public class Game : MonoBehaviour
 
         MainCamera.depth = 0;
         MainCamera.gameObject.SetActive(false);
-      
+
         foreach (GameObject map in Maps)
         {
             map.SetActive(false);
@@ -251,8 +291,8 @@ public class Game : MonoBehaviour
         CompletePanel.SetActive(false);
         LostPanel.SetActive(false);
 
-        CurrentStory = TileMapController.instance.LoadMap(MapNumber+1, SinglePlayer ? "Single" : "Multy");
-        
+        CurrentStory = TileMapController.instance.LoadMap(MapNumber + 1, SinglePlayer ? "Single" : "Multy");
+
         LoadStory();
 
         CurrentMap = MapNumber;
@@ -261,7 +301,7 @@ public class Game : MonoBehaviour
     // Story Functions
     public void LoadStory()
     {
-        if(Story == 2 || Story == 0 && SingleStoryCount < SingleUnlockedMaps) // Always or First time
+        if (Story == 2 || Story == 0 && SingleStoryCount < SingleUnlockedMaps) // Always or First time
         {
             StoryText.text = CurrentStory;
             StoryPanel.SetActive(true);
@@ -271,13 +311,13 @@ public class Game : MonoBehaviour
             StoryOk();
         }
 
-        if(SinglePlayer) SingleStoryCount = Math.Max(SingleStoryCount, SingleUnlockedMaps);
+        if (SinglePlayer) SingleStoryCount = Math.Max(SingleStoryCount, SingleUnlockedMaps);
         else MultiStoryCount = Math.Max(MultiStoryCount, MultiUnlockedMaps);
     }
     public void StoryOk()
     {
         StoryPanel.SetActive(false);
-        
+
         inGame = true;
     }
 
@@ -306,7 +346,7 @@ public class Game : MonoBehaviour
     }
     public void ResetCurrentMap()
     {
-        TileMapController.instance.LoadMap(CurrentMap+1, SinglePlayer ? "Single" : "Multy");
+        TileMapController.instance.LoadMap(CurrentMap + 1, SinglePlayer ? "Single" : "Multy");
 
         CompletePanel.SetActive(false);
         LostPanel.SetActive(false);
@@ -314,7 +354,7 @@ public class Game : MonoBehaviour
         PauseMenu.SetActive(false);
         MenuPausePanel.SetActive(false);
         OptionsPanel.SetActive(false);
-        
+
         inGame = true;
     }
     public void ChangeToMainCamera()
@@ -330,6 +370,7 @@ public class Game : MonoBehaviour
             map.SetActive(false);
         }
 
+        CurrentMap = -1;
         inGame = false;
     }
     public async void ToMainMenu()
@@ -390,8 +431,8 @@ public class Game : MonoBehaviour
         CurrentMap++;
         Maps[CurrentMap].SetActive(true);
 
-        CurrentStory = TileMapController.instance.LoadMap(CurrentMap+1, SinglePlayer ? "Single" : "Multy");
-        
+        CurrentStory = TileMapController.instance.LoadMap(CurrentMap + 1, SinglePlayer ? "Single" : "Multy");
+
         LoadStory();
 
         CompletePanel.SetActive(false);
@@ -404,22 +445,22 @@ public class Game : MonoBehaviour
         switch (number)
         {
             case 1:
-            newPlayer = Instantiate(PlayerModels[1], PlayersObject);
-            DesertPlayer = newPlayer;
-            DesertPlayerMovement = DesertPlayer.GetComponent<PlayerMovement>();
-            DesertPlayerMovement.PlayerAxes = "P1Horizontal";
-            DesertPlayerMovement.JumpCode = KeyCode.W;
-            return newPlayer;
+                newPlayer = Instantiate(PlayerModels[1], PlayersObject);
+                DesertPlayer = newPlayer;
+                DesertPlayerMovement = DesertPlayer.GetComponent<PlayerMovement>();
+                DesertPlayerMovement.PlayerAxes = "P1Horizontal";
+                DesertPlayerMovement.JumpCode = KeyCode.W;
+                return newPlayer;
             case 2:
-            newPlayer = Instantiate(PlayerModels[2], PlayersObject);
-            IcePlayer = newPlayer;
-            IcePlayerMovement = IcePlayer.GetComponent<PlayerMovement>();
-            IcePlayerMovement.PlayerAxes = "P1Horizontal";
-            IcePlayerMovement.JumpCode = KeyCode.W;
-            return newPlayer;
+                newPlayer = Instantiate(PlayerModels[2], PlayersObject);
+                IcePlayer = newPlayer;
+                IcePlayerMovement = IcePlayer.GetComponent<PlayerMovement>();
+                IcePlayerMovement.PlayerAxes = "P1Horizontal";
+                IcePlayerMovement.JumpCode = KeyCode.W;
+                return newPlayer;
             case 3:
             default:
-            return newPlayer;
+                return newPlayer;
         }
     }
 

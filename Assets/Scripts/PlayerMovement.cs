@@ -9,7 +9,7 @@ public enum PlayerType
     Ice,
 }
 
-[RequireComponent(typeof(Rigidbody2D),typeof(SpriteRenderer))]
+[RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))]
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rg;
@@ -48,31 +48,34 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKey(JumpCode) && Grounded)
+        if (Active)
         {
-            Jump = true;
-        }
+            if (Input.GetKey(JumpCode) && Grounded)
+            {
+                Jump = true;
+            }
 
-        MovePower = Input.GetAxisRaw(PlayerAxes);
-        if(MovePower > 0) sr.sprite = RightModel;
-        if(MovePower < 0) sr.sprite = LeftModel;
-        if(isLeftWall() && MovePower < 0) MovePower = 0;
-        if(isRightWall() && MovePower > 0) MovePower = 0;
+            MovePower = Input.GetAxisRaw(PlayerAxes);
+            if (MovePower > 0) sr.sprite = RightModel;
+            if (MovePower < 0) sr.sprite = LeftModel;
+            if (isLeftWall() && MovePower < 0) MovePower = 0;
+            if (isRightWall() && MovePower > 0) MovePower = 0;
+        }
     }
 
     void FixedUpdate()
     {
-        if(Active)
+        if (Active)
         {
-            if(UnderWater)
+            if (UnderWater)
             {
-                if(Jump) rg.AddForce(new Vector2(0, JumpPower * 4));
+                if (Jump) rg.AddForce(new Vector2(0, JumpPower * 4));
                 rg.velocity = new Vector2(MovePower * 2, rg.velocity.y);
                 rg.gravityScale = 0.5f;
             }
-            else 
+            else
             {
-                if(Jump) rg.AddForce(new Vector2(0, JumpPower * 10));
+                if (Jump) rg.AddForce(new Vector2(0, JumpPower * 10));
                 rg.velocity = new Vector2(MovePower * 5, rg.velocity.y);
                 rg.gravityScale = 2f;
             }
@@ -82,15 +85,15 @@ public class PlayerMovement : MonoBehaviour
 
     public bool isGrounded()
     {
-        if(Physics2D.BoxCast(transform.position, Ground_BoxSize, 0, -transform.up, Ground_CastDistance, LayerGround))
+        if (Physics2D.BoxCast(transform.position, Ground_BoxSize, 0, -transform.up, Ground_CastDistance, LayerGround))
         {
             return true;
         }
         return false;
     }
-        public bool inWater()
+    public bool inWater()
     {
-        if(Physics2D.BoxCast(transform.position, Water_BoxSize, 0, -transform.up, Water_CastDistance, LayerWater))
+        if (Physics2D.BoxCast(transform.position, Water_BoxSize, 0, -transform.up, Water_CastDistance, LayerWater))
         {
             return true;
         }
@@ -98,15 +101,15 @@ public class PlayerMovement : MonoBehaviour
     }
     public bool isLeftWall()
     {
-        if(Physics2D.BoxCast(transform.position - transform.up * 0.01f, Wall_BoxSize, 0, -transform.right, Wall_CastDistance, LayerGround))
+        if (Physics2D.BoxCast(transform.position - transform.up * 0.01f, Wall_BoxSize, 0, -transform.right, Wall_CastDistance, LayerGround))
         {
             return true;
         }
         return false;
     }
-        public bool isRightWall()
+    public bool isRightWall()
     {
-        if(Physics2D.BoxCast(transform.position - transform.up * 0.01f, Wall_BoxSize, 0, transform.right, Wall_CastDistance, LayerGround))
+        if (Physics2D.BoxCast(transform.position - transform.up * 0.01f, Wall_BoxSize, 0, transform.right, Wall_CastDistance, LayerGround))
         {
             return true;
         }

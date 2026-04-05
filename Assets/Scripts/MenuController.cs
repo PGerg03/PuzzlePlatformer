@@ -29,7 +29,7 @@ public class MenuController : MonoBehaviour
     void Start()
     {
         game = gameObject.GetComponent<Game>();
-        
+
         List<Dropdown.OptionData> res = new();
         for (int i = 0; i < Screen.resolutions.Count(); i++)
         {

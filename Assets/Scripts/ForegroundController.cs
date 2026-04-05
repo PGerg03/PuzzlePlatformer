@@ -1,18 +1,17 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class WaterController : MonoBehaviour
+public class ForegroundController : MonoBehaviour
 {
     #region Variables
     [SerializeField] Game GameScript;
     [SerializeField] Tilemap tilemap;
     public List<CustomTile> tiles = new();
-    public List<DefTileData> LoadadWaterTiles = new();
+    public List<DefTileData> LoadadForegroundTiles = new();
 
-    public static WaterController instance;
+    public static ForegroundController instance;
     #endregion
     #region Functions
     void Awake()
@@ -38,7 +37,7 @@ public class WaterController : MonoBehaviour
                 {
                     tempdata.tile = temptile.tileName;
                     tempdata.pos = new Vector3Int(x, y, 0);
-                    LoadadWaterTiles.Add(tempdata);
+                    LoadadForegroundTiles.Add(tempdata);
                 }
             }
         }
@@ -53,11 +52,11 @@ public class WaterController : MonoBehaviour
 
     #endregion
     #region Save - Load
-    public List<DefTileData> SaveWaterTiles()
+    public List<DefTileData> SaveForegroundTiles()
     {
-        if (LoadadWaterTiles.Count < 1) ReloadMap();
+        if (LoadadForegroundTiles.Count < 1) ReloadMap();
 
-        return LoadadWaterTiles;
+        return LoadadForegroundTiles;
     }
     public void ReloadMap()
     {
@@ -80,12 +79,12 @@ public class WaterController : MonoBehaviour
             }
         }
 
-        LoadadWaterTiles = data;
+        LoadadForegroundTiles = data;
     }
 
-    public void LoadWaterTiles(List<DefTileData> data)
+    public void LoadFroregroundTiles(List<DefTileData> data)
     {
-        LoadadWaterTiles = data;
+        LoadadForegroundTiles = data;
 
         tilemap.ClearAllTiles();
 

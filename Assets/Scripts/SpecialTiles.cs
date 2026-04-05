@@ -18,7 +18,7 @@ public class SpecialTiles : MonoBehaviour
     #region Functions
     void Awake()
     {
-        if(instance == null) instance = this;
+        if (instance == null) instance = this;
         else Destroy(this);
     }
 
@@ -27,15 +27,15 @@ public class SpecialTiles : MonoBehaviour
         // Testing
         BoundsInt bounds = tilemap.cellBounds;
 
-        for(int x = bounds.min.x; x < bounds.max.x; x++)
+        for (int x = bounds.min.x; x < bounds.max.x; x++)
         {
-            for(int y = bounds.min.y; y < bounds.max.y; y++)
+            for (int y = bounds.min.y; y < bounds.max.y; y++)
             {
                 TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
                 CustomTile temptile = tiles.Find(t => t.tile == temp);
                 DefTileData tempdata = new();
 
-                if(temptile != null)
+                if (temptile != null)
                 {
                     tempdata.tile = temptile.tileName;
                     tempdata.pos = new Vector3Int(x, y, 0);
@@ -49,12 +49,12 @@ public class SpecialTiles : MonoBehaviour
 
     void Update()
     {
-        
+
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.layer != 0) return;
+        if (collision.gameObject.layer != 7) return;
 
         GameObject Player = collision.gameObject;
         Vector3 pos = Player.transform.localPosition;
@@ -67,14 +67,14 @@ public class SpecialTiles : MonoBehaviour
         {
             float distance = (pos - LoadadSpecialTiles[i].pos).sqrMagnitude;
 
-            if(dist > distance) index = i;
+            if (dist > distance) index = i;
             dist = Math.Min(dist, distance);
         }
         string CollidedBlock = LoadadSpecialTiles[index].tile;
 
-        if(GameScript.SinglePlayer)
+        if (GameScript.SinglePlayer)
         {
-            switch(CollidedBlock)
+            switch (CollidedBlock)
             {
                 case "TopDoor":
                 case "BottomDoor":
@@ -85,8 +85,8 @@ public class SpecialTiles : MonoBehaviour
                     break;
                 case "TopSpike":
                 case "BottomSpike":
-                case "LeftSpike" :
-                case "RightSpike" :
+                case "LeftSpike":
+                case "RightSpike":
                     SpikeHit();
                     break;
                 default: return;
@@ -110,7 +110,7 @@ public class SpecialTiles : MonoBehaviour
     #region Save - Load
     public List<DefTileData> SaveSpecialTiles()
     {
-        if(LoadadSpecialTiles.Count < 1) ReloadMap();
+        if (LoadadSpecialTiles.Count < 1) ReloadMap();
 
         return LoadadSpecialTiles;
     }
@@ -119,15 +119,15 @@ public class SpecialTiles : MonoBehaviour
     {
         BoundsInt bounds = tilemap.cellBounds;
         List<DefTileData> data = new();
-        for(int x = bounds.min.x; x < bounds.max.x; x++)
+        for (int x = bounds.min.x; x < bounds.max.x; x++)
         {
-            for(int y = bounds.min.y; y < bounds.max.y; y++)
+            for (int y = bounds.min.y; y < bounds.max.y; y++)
             {
                 TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
                 CustomTile temptile = tiles.Find(t => t.tile == temp);
                 DefTileData tempdata = new();
 
-                if(temptile != null)
+                if (temptile != null)
                 {
                     tempdata.tile = temptile.tileName;
                     tempdata.pos = new Vector3Int(x, y, 0);
@@ -138,7 +138,7 @@ public class SpecialTiles : MonoBehaviour
 
         LoadadSpecialTiles = data;
     }
-    
+
     public void LoadSpecialTiles(List<DefTileData> data)
     {
         LoadadSpecialTiles = data;

@@ -5,7 +5,7 @@ using UnityEngine.Tilemaps;
 
 public class BackgroundController : MonoBehaviour
 {
-    
+
     #region Variables
     [SerializeField] Game GameScript;
     [SerializeField] Tilemap tilemap;
@@ -17,7 +17,7 @@ public class BackgroundController : MonoBehaviour
     #region Functions
     void Awake()
     {
-        if(instance == null) instance = this;
+        if (instance == null) instance = this;
         else Destroy(this);
     }
 
@@ -26,15 +26,15 @@ public class BackgroundController : MonoBehaviour
         // Testing
         BoundsInt bounds = tilemap.cellBounds;
 
-        for(int x = bounds.min.x; x < bounds.max.x; x++)
+        for (int x = bounds.min.x; x < bounds.max.x; x++)
         {
-            for(int y = bounds.min.y; y < bounds.max.y; y++)
+            for (int y = bounds.min.y; y < bounds.max.y; y++)
             {
                 TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
                 CustomTile temptile = tiles.Find(t => t.tile == temp);
                 DefTileData tempdata = new();
 
-                if(temptile != null)
+                if (temptile != null)
                 {
                     tempdata.tile = temptile.tileName;
                     tempdata.pos = new Vector3Int(x, y, 0);
@@ -43,20 +43,20 @@ public class BackgroundController : MonoBehaviour
             }
         }
         // Testing
-        
+
     }
 
     void Update()
     {
-        
+
     }
 
     #endregion
     #region Save - Load
     public List<DefTileData> SaveBackTiles()
     {
-        if(LoadadBackgroundTiles.Count < 1) ReloadMap();
-        
+        if (LoadadBackgroundTiles.Count < 1) ReloadMap();
+
         return LoadadBackgroundTiles;
     }
 
@@ -64,15 +64,15 @@ public class BackgroundController : MonoBehaviour
     {
         BoundsInt bounds = tilemap.cellBounds;
         List<DefTileData> data = new();
-        for(int x = bounds.min.x; x < bounds.max.x; x++)
+        for (int x = bounds.min.x; x < bounds.max.x; x++)
         {
-            for(int y = bounds.min.y; y < bounds.max.y; y++)
+            for (int y = bounds.min.y; y < bounds.max.y; y++)
             {
                 TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
                 CustomTile temptile = tiles.Find(t => t.tile == temp);
                 DefTileData tempdata = new();
 
-                if(temptile != null)
+                if (temptile != null)
                 {
                     tempdata.tile = temptile.tileName;
                     tempdata.pos = new Vector3Int(x, y, 0);
@@ -94,6 +94,6 @@ public class BackgroundController : MonoBehaviour
             tilemap.SetTile(data[i].pos, tiles.Find(t => t.tileName == data[i].tile).tile);
         }
     }
-    
+
     #endregion
 }

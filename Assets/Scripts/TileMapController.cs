@@ -15,26 +15,26 @@ public class TileMapController : MonoBehaviour
     public List<GameObject> Players;
 
     public List<CustomTile> tiles = new();
-    
+
     public static TileMapController instance;
     void Awake()
     {
-        if(instance == null) instance = this;
+        if (instance == null) instance = this;
         else Destroy(this);
     }
 
     void FixedUpdate()
     {
-        if(EditMode) GameScript.inGame = false;
+        if (EditMode) GameScript.inGame = false;
         Players.ForEach(p => p.GetComponent<Rigidbody2D>().simulated = GameScript.inGame);
     }
 
     #region Edit
     void Update()
     {
-        if(EditMode && Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.F)) SaveMap();
-        if(EditMode && Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.R)) ReloadMaps();
-        
+        if (EditMode && Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.F)) SaveMap();
+        if (EditMode && Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.R)) ReloadMaps();
+
     }
     public bool EditMode = true;
     public string SaveName = "SingleLevel1";
@@ -44,6 +44,7 @@ public class TileMapController : MonoBehaviour
         MechanicController.instance.ReloadMap();
         WaterController.instance.ReloadMap();
         BackgroundController.instance.ReloadMap();
+        ForegroundController.instance.ReloadMap();
     }
 
     private void SaveMap()
@@ -52,17 +53,17 @@ public class TileMapController : MonoBehaviour
 
         LevelData levelData = new();
 
-        for(int x = bounds.min.x; x < bounds.max.x; x++)
+        for (int x = bounds.min.x; x < bounds.max.x; x++)
         {
-            for(int y = bounds.min.y; y < bounds.max.y; y++)
+            for (int y = bounds.min.y; y < bounds.max.y; y++)
             {
                 TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
                 CustomTile temptile = tiles.Find(t => t.tile == temp);
                 DefTileData maintile = new();
 
-                if(temptile != null)
+                if (temptile != null)
                 {
-                    maintile.pos = new Vector3Int(x,y,0);
+                    maintile.pos = new Vector3Int(x, y, 0);
                     maintile.tile = temptile.tileName;
                     levelData.MaintileData.Add(maintile);
                 }
@@ -76,6 +77,7 @@ public class TileMapController : MonoBehaviour
         levelData.gatesData = MechanicController.instance.SaveGates();
         levelData.waterData = WaterController.instance.SaveWaterTiles();
         levelData.backgroundData = BackgroundController.instance.SaveBackTiles();
+        levelData.foregroundData = ForegroundController.instance.SaveForegroundTiles();
 
         string json = JsonUtility.ToJson(levelData, true);
         File.WriteAllText(Application.dataPath + $"/Maps/{SaveName}.json", json);
@@ -88,7 +90,7 @@ public class TileMapController : MonoBehaviour
     public string LoadMap(int map, string type)
     {
         SaveName = $"{type}Level{map}";
-        if(!File.Exists(Application.dataPath + $"/Maps/{type}Level{map}.json")) return ""; // for Edit mode
+        if (!File.Exists(Application.dataPath + $"/Maps/{type}Level{map}.json")) return ""; // for Edit mode
 
         string json = File.ReadAllText(Application.dataPath + $"/Maps/{type}Level{map}.json");
         LevelData data = JsonUtility.FromJson<LevelData>(json);
@@ -104,10 +106,12 @@ public class TileMapController : MonoBehaviour
         MechanicController.instance.LoadMechanicTiles(data.buttonsData, data.gatesData);
         WaterController.instance.LoadWaterTiles(data.waterData);
         BackgroundController.instance.LoadBackTiles(data.backgroundData);
-        
+        ForegroundController.instance.LoadFroregroundTiles(data.foregroundData);
+
+        Players.ForEach(p => p.transform.localPosition = new Vector3Int(0, 50, 0));
         for (int i = 0; i < data.PlayersPos.Count; i++)
         {
-            if(Players.Count == i)
+            if (Players.Count == i)
             {
                 Players.Add(GameScript.CreateNextPlayer(i));
             }
@@ -133,6 +137,7 @@ public class LevelData
     public List<ButtonData> buttonsData = new();
     public List<GateData> gatesData = new();
     public List<DefTileData> waterData = new();
+    public List<DefTileData> foregroundData = new();
 }
 
 [System.Serializable]

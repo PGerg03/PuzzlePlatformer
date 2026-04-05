@@ -22,24 +22,24 @@ public class MechanicController : MonoBehaviour
     #region Functions
     void Awake()
     {
-        if(instance == null) instance = this;
+        if (instance == null) instance = this;
         else Destroy(this);
     }
-    
+
     void Start()
     {
         //Testing
         BoundsInt bounds = tilemap.cellBounds;
 
-        for(int x = bounds.min.x; x < bounds.max.x; x++)
+        for (int x = bounds.min.x; x < bounds.max.x; x++)
         {
-            for(int y = bounds.min.y; y < bounds.max.y; y++)
+            for (int y = bounds.min.y; y < bounds.max.y; y++)
             {
                 TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
                 CustomTile temptile = tiles.Find(t => t.tile == temp);
                 ButtonData tempdata = new();
 
-                if(temptile != null)
+                if (temptile != null)
                 {
                     tempdata.button = temptile.tileName;
                     tempdata.pos = new Vector3Int(x, y, 0);
@@ -65,12 +65,12 @@ public class MechanicController : MonoBehaviour
 
     void Update()
     {
-        
+
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.layer != 0) return;
+        if (collision.gameObject.layer != 7) return;
 
         GameObject Player = collision.gameObject;
         Vector3 pos = Player.transform.localPosition;
@@ -83,7 +83,7 @@ public class MechanicController : MonoBehaviour
         {
             float distance = (pos - Buttons[i].pos).sqrMagnitude;
 
-            if(dist > distance) index = i;
+            if (dist > distance) index = i;
             dist = Math.Min(dist, distance);
         }
 
@@ -93,59 +93,59 @@ public class MechanicController : MonoBehaviour
         Player.GetComponent<PlayerMovement>().LastContact = index;
 
         int color;
-        switch(CollidedBlock)
+        switch (CollidedBlock)
         {
-            case "BlueButton" :
-            case "BluePressurePlate" :
+            case "BlueButton":
+            case "BluePressurePlate":
                 color = 1;
                 break;
-            case "GreenButton" :
-            case "GreenPressurePlate" :
+            case "GreenButton":
+            case "GreenPressurePlate":
                 color = 2;
                 break;
-            case "RedButton" :
-            case "RedPressurePlate" :
+            case "RedButton":
+            case "RedPressurePlate":
                 color = 3;
                 break;
-            case "YellowButton" :
-            case "YellowPressurePlate" :
+            case "YellowButton":
+            case "YellowPressurePlate":
                 color = 4;
                 break;
             default: return;
         }
-        if(color > 0) ActivateButton(activatedButton, color);
+        if (color > 0) ActivateButton(activatedButton, color);
     }
 
     void OnTriggerExit2D(Collider2D collision)
     {
-        if(collision.gameObject.layer != 0) return;
+        if (collision.gameObject.layer != 0) return;
 
         GameObject Player = collision.gameObject;
 
         int index = Player.GetComponent<PlayerMovement>().LastContact;
-        if(index < 0) return;
+        if (index < 0) return;
 
         string CollidedBlock = Buttons[index].button;
         ButtonData activatedButton = Buttons[index];
 
         int color;
-        switch(CollidedBlock)
+        switch (CollidedBlock)
         {
-            case "BluePressurePlate" :
+            case "BluePressurePlate":
                 color = 1;
                 break;
-            case "GreenPressurePlate" :
+            case "GreenPressurePlate":
                 color = 2;
                 break;
-            case "RedPressurePlate" :
+            case "RedPressurePlate":
                 color = 3;
                 break;
-            case "YellowPressurePlate" :
+            case "YellowPressurePlate":
                 color = 4;
                 break;
             default: return;
         }
-        if(color > 0) DeactivateButton(activatedButton, color);
+        if (color > 0) DeactivateButton(activatedButton, color);
     }
 
     public void ActivateButton(ButtonData activeButton, int color)
@@ -155,10 +155,11 @@ public class MechanicController : MonoBehaviour
         for (int i = 0; i < activeButton.gatesIndex.Count; i++)
         {
             int index = activeButton.gatesIndex[i];
-            GateObjects[index].GetComponent<Animator>().SetTrigger("Open");
+            GateObjects[index].GetComponent<Animator>().SetBool("Open", true);
+            GateObjects[index].GetComponent<Animator>().SetBool("Close", false);
         }
     }
-    
+
     public void DeactivateButton(ButtonData deactiveButton, int color)
     {
         ChangeButtonStatus(deactiveButton.pos, color, false);
@@ -166,29 +167,30 @@ public class MechanicController : MonoBehaviour
         for (int i = 0; i < deactiveButton.gatesIndex.Count; i++)
         {
             int index = deactiveButton.gatesIndex[i];
-            GateObjects[index].GetComponent<Animator>().SetTrigger("Close");
+            GateObjects[index].GetComponent<Animator>().SetBool("Close", true);
+            GateObjects[index].GetComponent<Animator>().SetBool("Open", false);
         }
     }
 
     /// <param name="active">true ha benyomva van, false ha felengedve</param>
     public void ChangeButtonStatus(Vector3Int pos, int color, bool active)
     {
-        if(active) tilemap.SetTile(pos, tiles[7+color].tile);
-        else tilemap.SetTile(pos, tiles[3+color].tile);
+        if (active) tilemap.SetTile(pos, tiles[7 + color].tile);
+        else tilemap.SetTile(pos, tiles[3 + color].tile);
     }
 
     #endregion
     #region Save & Load
     public List<ButtonData> SaveButtons()
     {
-        if(Buttons.Count < 1) ReloadMap();
-        
+        if (Buttons.Count < 1) ReloadMap();
+
         return Buttons;
     }
 
     public List<GateData> SaveGates()
     {
-        if(Gates.Count < 1) ReloadMap();
+        if (Gates.Count < 1) ReloadMap();
 
         return Gates;
     }
@@ -198,15 +200,15 @@ public class MechanicController : MonoBehaviour
         BoundsInt bounds = tilemap.cellBounds;
         List<ButtonData> data = new();
 
-        for(int x = bounds.min.x; x < bounds.max.x; x++)
+        for (int x = bounds.min.x; x < bounds.max.x; x++)
         {
-            for(int y = bounds.min.y; y < bounds.max.y; y++)
+            for (int y = bounds.min.y; y < bounds.max.y; y++)
             {
                 TileBase temp = tilemap.GetTile(new Vector3Int(x, y, 0));
                 CustomTile temptile = tiles.Find(t => t.tile == temp);
                 ButtonData tempdata = new();
 
-                if(temptile != null)
+                if (temptile != null)
                 {
                     tempdata.button = temptile.tileName;
                     tempdata.pos = new Vector3Int(x, y, 0);
