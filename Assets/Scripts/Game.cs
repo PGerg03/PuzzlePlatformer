@@ -24,6 +24,8 @@ public class Game : MonoBehaviour
     public int MultiUnlockedMaps;
     public int SingleStoryCount;
     public int MultiStoryCount;
+    public List<StarCollection> SinglePlayerStars = new();
+    public List<StarCollection> MultiPlayerStars = new();
     [SerializeField] private Tilemap Tilemap;
     public bool inGame;
     public bool SinglePlayer;
@@ -291,7 +293,7 @@ public class Game : MonoBehaviour
         CompletePanel.SetActive(false);
         LostPanel.SetActive(false);
 
-        CurrentStory = TileMapController.instance.LoadMap(MapNumber + 1, SinglePlayer ? "Single" : "Multy");
+        CurrentStory = TileMapController.instance.LoadMap(MapNumber + 1, SinglePlayer ? "Single" : "Multy", SinglePlayer ? SinglePlayerStars[MapNumber] : MultiPlayerStars[MapNumber]);
 
         LoadStory();
 
@@ -346,7 +348,7 @@ public class Game : MonoBehaviour
     }
     public void ResetCurrentMap()
     {
-        TileMapController.instance.LoadMap(CurrentMap + 1, SinglePlayer ? "Single" : "Multy");
+        TileMapController.instance.LoadMap(CurrentMap, SinglePlayer ? "Single" : "Multy", SinglePlayer ? SinglePlayerStars[CurrentMap - 1] : MultiPlayerStars[CurrentMap - 1]);
 
         CompletePanel.SetActive(false);
         LostPanel.SetActive(false);
@@ -407,37 +409,6 @@ public class Game : MonoBehaviour
         OptionsMenu(false);
     }
 
-    // Complete Panel Functions
-    public void CompleteLevel()
-    {
-        if (SinglePlayer) SingleUnlockedMaps++;
-        else MultiUnlockedMaps++;
-
-        PausePanel.SetActive(true);
-        CompletePanel.SetActive(true);
-
-        inGame = false;
-    }
-    public void LoseLevel()
-    {
-        PausePanel.SetActive(true);
-        LostPanel.SetActive(true);
-
-        inGame = false;
-    }
-    public void NextMap()
-    {
-        Maps[CurrentMap].SetActive(false);
-        CurrentMap++;
-        Maps[CurrentMap].SetActive(true);
-
-        CurrentStory = TileMapController.instance.LoadMap(CurrentMap + 1, SinglePlayer ? "Single" : "Multy");
-
-        LoadStory();
-
-        CompletePanel.SetActive(false);
-        PausePanel.SetActive(false);
-    }
 
     public GameObject CreateNextPlayer(int number)
     {
@@ -465,5 +436,51 @@ public class Game : MonoBehaviour
     }
 
     #endregion
+    #region InGame Functions
 
+    // Complete Panel Functions
+    public void CompleteLevel()
+    {
+        if (SinglePlayer) SingleUnlockedMaps++;
+        else MultiUnlockedMaps++;
+        SaveOptions();
+
+        PausePanel.SetActive(true);
+        CompletePanel.SetActive(true);
+
+        inGame = false;
+    }
+    public void LoseLevel()
+    {
+        PausePanel.SetActive(true);
+        LostPanel.SetActive(true);
+
+        inGame = false;
+    }
+    public void NextMap()
+    {
+        Maps[CurrentMap].SetActive(false);
+        CurrentMap++;
+        Maps[CurrentMap].SetActive(true);
+
+        CurrentStory = TileMapController.instance.LoadMap(CurrentMap + 1, SinglePlayer ? "Single" : "Multy", SinglePlayer ? SinglePlayerStars[CurrentMap] : MultiPlayerStars[CurrentMap]);
+
+        LoadStory();
+
+        CompletePanel.SetActive(false);
+        PausePanel.SetActive(false);
+    }
+
+    public void Collect(int starid)
+    {
+        if (SinglePlayer)
+        {
+            SinglePlayerStars[CurrentMap][starid] = 1;
+        }
+        else
+        {
+            MultiPlayerStars[CurrentMap][starid] = 1;
+        }
+    }
+    #endregion
 }

@@ -2,16 +2,39 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 #region Option POCOs
+[System.Serializable]
 struct OptionSave
 {
     public float Volume;
     public int Resolution, WindowMode, StoryMode;
     public int Single, Multi;
     public int SingleStoryC, MultiStoryC;
+    public List<StarCollection> SinglePStars;
+    public List<StarCollection> MultiPStars;
 };
+
+[System.Serializable]
+public class StarCollection
+{
+    public List<int> stars = new() { 0, 0, 0 };
+
+    public int this[int x]
+    {
+        get { return stars[x]; }
+        set { stars[x] = value; }
+    }
+
+    public int Count
+    {
+        get { return stars.Count; }
+    }
+
+}
+
 #endregion
 
 public static class Saver
@@ -53,6 +76,17 @@ public static class Saver
         options.MultiUnlockedMaps = soption.Multi;
         options.SingleStoryCount = soption.SingleStoryC;
         options.MultiStoryCount = soption.MultiStoryC;
+
+        options.SinglePlayerStars.AddRange(soption.SinglePStars ?? new List<StarCollection>());
+        while (options.SinglePlayerStars.Count < 15)
+        {
+            options.SinglePlayerStars.Add(new StarCollection());
+        }
+        options.MultiPlayerStars.AddRange(soption.MultiPStars ?? new List<StarCollection>());
+        while (options.MultiPlayerStars.Count < 15)
+        {
+            options.MultiPlayerStars.Add(new StarCollection());
+        }
     }
 
     public static void SaveOptions(string path, Game options)
@@ -66,10 +100,15 @@ public static class Saver
             Single = options.SingleUnlockedMaps,
             Multi = options.MultiUnlockedMaps,
             SingleStoryC = options.SingleStoryCount,
-            MultiStoryC = options.MultiStoryCount
+            MultiStoryC = options.MultiStoryCount,
+            SinglePStars = new(),
+            MultiPStars = new()
         };
 
-        string json = JsonUtility.ToJson(optionSave);
+        options.SinglePlayerStars.ForEach(s => optionSave.SinglePStars.Add(s));
+        options.MultiPlayerStars.ForEach(s => optionSave.MultiPStars.Add(s));
+
+        string json = JsonUtility.ToJson(optionSave, true);
         File.WriteAllText(path, json);
     }
     #endregion

@@ -12,7 +12,10 @@ public class TileMapController : MonoBehaviour
     [SerializeField] TileBase CurrentTile;
     [SerializeField] Camera cam;
     [SerializeField] Tilemap tilemap;
+    [SerializeField] GameObject Star;
+    [SerializeField] Transform StarParrent;
     public List<GameObject> Players;
+    public List<StarController> StarObjects;
 
     public List<CustomTile> tiles = new();
 
@@ -70,6 +73,18 @@ public class TileMapController : MonoBehaviour
             }
         }
 
+        StarObjects.AddRange(StarParrent.GetComponentsInChildren<StarController>());
+        for (int i = 0; i < StarObjects.Count; i++)
+        {
+            levelData.Stars.Add
+            (
+                new()
+                {
+                    pos = StarObjects[i].gameObject.transform.localPosition
+                }
+            );
+        }
+
         Players.ForEach(p => levelData.PlayersPos.Add(new Vector3Int((int)p.transform.position.x, (int)p.transform.position.y, 0)));
 
         levelData.specialTiles = SpecialTiles.instance.SaveSpecialTiles();
@@ -87,7 +102,7 @@ public class TileMapController : MonoBehaviour
 
     #endregion
     #region Game
-    public string LoadMap(int map, string type)
+    public string LoadMap(int map, string type, StarCollection stars)
     {
         SaveName = $"{type}Level{map}";
         if (!File.Exists(Application.dataPath + $"/Maps/{type}Level{map}.json")) return ""; // for Edit mode
@@ -100,6 +115,15 @@ public class TileMapController : MonoBehaviour
         for (int i = 0; i < data.MaintileData.Count; i++)
         {
             tilemap.SetTile(new Vector3Int(data.MaintileData[i].pos.x, data.MaintileData[i].pos.y, 0), tiles.Find(t => t.tileName == data.MaintileData[i].tile).tile);
+        }
+
+        StarObjects.ForEach(s => s.End());
+        StarObjects.Clear();
+        for (int i = 0; i < data.Stars.Count; i++)
+        {
+            StarController temp = Instantiate(Star, StarParrent).GetComponent<StarController>();
+            temp.Setup(i, data.Stars[i].pos, stars[i], GameScript);
+            StarObjects.Add(temp);
         }
 
         SpecialTiles.instance.LoadSpecialTiles(data.specialTiles);
@@ -131,6 +155,7 @@ public class LevelData
 {
     public string Story;
     public List<Vector3Int> PlayersPos = new();
+    public List<StarData> Stars = new();
     public List<DefTileData> MaintileData = new();
     public List<DefTileData> backgroundData = new();
     public List<DefTileData> specialTiles = new();
@@ -145,6 +170,12 @@ public class DefTileData
 {
     public string tile = "";
     public Vector3Int pos = new();
+}
+
+[System.Serializable]
+public class StarData
+{
+    public Vector3 pos = new();
 }
 
 [System.Serializable]
