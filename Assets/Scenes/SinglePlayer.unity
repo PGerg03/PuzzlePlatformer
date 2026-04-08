@@ -335,7 +335,6 @@ MonoBehaviour:
   PlayersObject: {fileID: 64979307}
   MenuPausePanel: {fileID: 902492361}
   MenuPauseMenu: {fileID: 1953987303}
-  MenuSettingsMenu: {fileID: 1682369265}
   PausePanel: {fileID: 925219738}
   PauseMenu: {fileID: 172595779}
   PauseMenuButtons:
@@ -346,6 +345,11 @@ MonoBehaviour:
   - {fileID: 95790823}
   StoryPanel: {fileID: 2096326100}
   StoryText: {fileID: 1762704775}
+  MenuSettingsMenu: {fileID: 1682369265}
+  MenuMainSoundSlider: {fileID: 1069676100}
+  MenuWindowmodedropdown: {fileID: 1067069557}
+  MenuResolutiondropdown: {fileID: 1824610229}
+  MenuStoryOptions: {fileID: 1969603521}
   OptionsPanel: {fileID: 2039613105}
   MainSoundSlider: {fileID: 1881656260}
   Windowmodedropdown: {fileID: 1209489680}
@@ -1714,7 +1718,7 @@ Camera:
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
-  m_AllowMSAA: 1
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
@@ -22998,7 +23002,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 26220321}
         m_TargetAssemblyTypeName: Game, Assembly-CSharp
-        m_MethodName: SettingsChange
+        m_MethodName: WindowModeChange
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -23961,7 +23965,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 26220321}
         m_TargetAssemblyTypeName: Game, Assembly-CSharp
-        m_MethodName: SettingsChange
+        m_MethodName: WindowModeChange
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -35452,7 +35456,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 26220321}
         m_TargetAssemblyTypeName: Game, Assembly-CSharp
-        m_MethodName: SettingsChange
+        m_MethodName: ResolutionChange
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -36137,7 +36141,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 26220321}
         m_TargetAssemblyTypeName: Game, Assembly-CSharp
-        m_MethodName: SettingsChange
+        m_MethodName: ResolutionChange
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

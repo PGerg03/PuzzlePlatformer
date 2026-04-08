@@ -15,7 +15,7 @@ public class Game : MonoBehaviour
 
     [Header("Settings")]
     public float MainVolume;
-    public int WindowMode;
+    public FullScreenMode WindowMode;
     public int Resolution;
     public int Story;
 
@@ -42,7 +42,6 @@ public class Game : MonoBehaviour
     [Header("MenuPause")]
     [SerializeField] private GameObject MenuPausePanel;
     [SerializeField] private GameObject MenuPauseMenu;
-    [SerializeField] private GameObject MenuSettingsMenu;
 
     [Header("Pause")]
     [SerializeField] private GameObject PausePanel;
@@ -50,6 +49,13 @@ public class Game : MonoBehaviour
     [SerializeField] private Button[] PauseMenuButtons;
     [SerializeField] private GameObject StoryPanel;
     [SerializeField] private Text StoryText;
+
+    [Header("Menu Options")]
+    [SerializeField] private GameObject MenuSettingsMenu;
+    [SerializeField] private Slider MenuMainSoundSlider;
+    [SerializeField] private Dropdown MenuWindowmodedropdown;
+    [SerializeField] private Dropdown MenuResolutiondropdown;
+    [SerializeField] private Dropdown MenuStoryOptions;
 
     [Header("Options")]
     [SerializeField] private GameObject OptionsPanel;
@@ -111,6 +117,7 @@ public class Game : MonoBehaviour
 
     void Start()
     {
+        // TODO ellenőrzés / vizsgálat
         List<Dropdown.OptionData> res = new();
         for (int i = 0; i < Screen.resolutions.Count(); i++)
         {
@@ -121,10 +128,17 @@ public class Game : MonoBehaviour
 
         Resolutiondropdown.ClearOptions();
         Resolutiondropdown.AddOptions(res);
-
         MainSoundSlider.value = MainVolume;
-        Windowmodedropdown.value = WindowMode;
+        Windowmodedropdown.value = (int)WindowMode == 3 ? 2 : (int)WindowMode;
         Resolutiondropdown.value = Resolution;
+        StoryOptions.value = Story;
+
+        MenuResolutiondropdown.ClearOptions();
+        MenuResolutiondropdown.AddOptions(res);
+        MenuMainSoundSlider.value = MainVolume;
+        MenuWindowmodedropdown.value = (int)WindowMode == 3 ? 2 : (int)WindowMode;
+        MenuResolutiondropdown.value = Resolution;
+        MenuStoryOptions.value = Story;
         Debug.Log("Options loaded");
 
         if (!SceneLoader.Instance.IsUnityNull())
@@ -367,6 +381,8 @@ public class Game : MonoBehaviour
         MapCamera.depth = 0;
         MapCamera.gameObject.SetActive(false);
 
+        MenuPauseMenu.SetActive(false);
+
         foreach (GameObject map in Maps)
         {
             map.SetActive(false);
@@ -386,11 +402,18 @@ public class Game : MonoBehaviour
     {
         MainVolume = v;
     }
-    public void SettingsChange(int v)
+    public void ResolutionChange(int v)
     {
-        WindowMode = Windowmodedropdown.value;
-        Resolution = Resolutiondropdown.value;
-
+        Resolution = v;
+        SettingsChange();
+    }
+    public void WindowModeChange(int v)
+    {
+        WindowMode = (FullScreenMode)(v == 2 ? 3 : v);
+        SettingsChange();
+    }
+    public void SettingsChange()
+    {
         string[] seged = Resolutiondropdown.options[Resolution].text.Split('x');
         int[] screensize =
         {
@@ -398,7 +421,7 @@ public class Game : MonoBehaviour
             Convert.ToInt32(seged[1])
         };
 
-        Screen.SetResolution(screensize[0], screensize[1], WindowMode != 2);
+        Screen.SetResolution(screensize[0], screensize[1], WindowMode);
     }
     public void StorySetting(int v)
     {

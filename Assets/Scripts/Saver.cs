@@ -69,7 +69,7 @@ public static class Saver
 
         /* Handle options data */
         options.Resolution = soption.Resolution;
-        options.WindowMode = soption.WindowMode;
+        options.WindowMode = (FullScreenMode)soption.WindowMode;
         options.MainVolume = soption.Volume;
         options.Story = soption.StoryMode;
         options.SingleUnlockedMaps = soption.Single;
@@ -94,7 +94,7 @@ public static class Saver
         OptionSave optionSave = new()
         {
             Resolution = options.Resolution,
-            WindowMode = options.WindowMode,
+            WindowMode = (int)options.WindowMode,
             Volume = options.MainVolume,
             StoryMode = options.Story,
             Single = options.SingleUnlockedMaps,

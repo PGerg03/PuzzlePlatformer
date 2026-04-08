@@ -42,9 +42,10 @@ public class MenuController : MonoBehaviour
         Resolutiondropdown.AddOptions(res);
 
         MainSoundSlider.value = game.MainVolume;
-        Windowmodedropdown.value = game.WindowMode;
         Resolutiondropdown.value = game.Resolution;
-
+        int WindowMode = (int)game.WindowMode;
+        Windowmodedropdown.value = WindowMode == 3 ? 2 : WindowMode;
+        
         string[] seged = Resolutiondropdown.options[game.Resolution].text.Split('x');
         int[] screensize =
         {
@@ -52,7 +53,7 @@ public class MenuController : MonoBehaviour
             Convert.ToInt32(seged[1])
         };
 
-        Screen.SetResolution(screensize[0], screensize[1], game.WindowMode != 2);
+        Screen.SetResolution(screensize[0], screensize[1], game.WindowMode);
     }
 
     public void OnHoverStart(string buttontag)
@@ -125,7 +126,7 @@ public class MenuController : MonoBehaviour
     }
     public void SettingsChange(int v)
     {
-        game.WindowMode = Windowmodedropdown.value;
+        game.WindowMode = (FullScreenMode)(Windowmodedropdown.value == 2 ? 3 : Windowmodedropdown.value);
         game.Resolution = Resolutiondropdown.value;
 
         string[] seged = Resolutiondropdown.options[game.Resolution].text.Split('x');
@@ -135,7 +136,7 @@ public class MenuController : MonoBehaviour
             Convert.ToInt32(seged[1])
         };
 
-        Screen.SetResolution(screensize[0], screensize[1], game.WindowMode != 2);
+        Screen.SetResolution(screensize[0], screensize[1], game.WindowMode);
     }
 
     void Update()
