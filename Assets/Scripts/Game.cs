@@ -295,15 +295,15 @@ public class Game : MonoBehaviour
 
         CurrentStory = TileMapController.instance.LoadMap(MapNumber + 1, SinglePlayer ? "Single" : "Multy", SinglePlayer ? SinglePlayerStars[MapNumber] : MultiPlayerStars[MapNumber]);
 
-        LoadStory();
-
         CurrentMap = MapNumber;
+
+        LoadStory();
     }
 
     // Story Functions
     public void LoadStory()
     {
-        if (Story == 2 || Story == 0 && SingleStoryCount < SingleUnlockedMaps) // Always or First time
+        if (Story == 2 || Story == 0 && SingleStoryCount < CurrentMap) // Always or First time
         {
             StoryText.text = CurrentStory;
             StoryPanel.SetActive(true);
@@ -313,8 +313,8 @@ public class Game : MonoBehaviour
             StoryOk();
         }
 
-        if (SinglePlayer) SingleStoryCount = Math.Max(SingleStoryCount, SingleUnlockedMaps);
-        else MultiStoryCount = Math.Max(MultiStoryCount, MultiUnlockedMaps);
+        if (SinglePlayer) SingleStoryCount = Math.Max(SingleStoryCount, CurrentMap);
+        else MultiStoryCount = Math.Max(MultiStoryCount, CurrentMap);
     }
     public void StoryOk()
     {
@@ -348,7 +348,7 @@ public class Game : MonoBehaviour
     }
     public void ResetCurrentMap()
     {
-        TileMapController.instance.LoadMap(CurrentMap, SinglePlayer ? "Single" : "Multy", SinglePlayer ? SinglePlayerStars[CurrentMap - 1] : MultiPlayerStars[CurrentMap - 1]);
+        TileMapController.instance.LoadMap(CurrentMap + 1, SinglePlayer ? "Single" : "Multy", SinglePlayer ? SinglePlayerStars[CurrentMap - 1] : MultiPlayerStars[CurrentMap - 1]);
 
         CompletePanel.SetActive(false);
         LostPanel.SetActive(false);
@@ -441,6 +441,9 @@ public class Game : MonoBehaviour
     // Complete Panel Functions
     public void CompleteLevel()
     {
+        if (!NaturePlayerMovement.Done || (!DesertPlayerMovement.IsUnityNull() && !DesertPlayerMovement.Done) || (!IcePlayerMovement.IsUnityNull() && !IcePlayerMovement.Done))
+            return;
+
         if (SinglePlayer) SingleUnlockedMaps++;
         else MultiUnlockedMaps++;
         SaveOptions();

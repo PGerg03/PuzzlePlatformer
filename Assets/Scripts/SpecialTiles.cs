@@ -78,6 +78,7 @@ public class SpecialTiles : MonoBehaviour
             {
                 case "TopDoor":
                 case "BottomDoor":
+                    Player.GetComponent<PlayerMovement>().Done = true;
                     GameScript.CompleteLevel();
                     break;
                 case "JumpPad":
@@ -88,6 +89,39 @@ public class SpecialTiles : MonoBehaviour
                 case "LeftSpike":
                 case "RightSpike":
                     SpikeHit();
+                    break;
+                default: return;
+            }
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer != 7) return;
+
+        GameObject Player = collision.gameObject;
+        Vector3 pos = Player.transform.localPosition;
+        pos.y -= 1;
+        pos.x -= 0.5f;
+
+        float dist = 10;
+        int index = 0;
+        for (int i = 0; i < LoadadSpecialTiles.Count; i++)
+        {
+            float distance = (pos - LoadadSpecialTiles[i].pos).sqrMagnitude;
+
+            if (dist > distance) index = i;
+            dist = Math.Min(dist, distance);
+        }
+        string CollidedBlock = LoadadSpecialTiles[index].tile;
+
+        if (GameScript.SinglePlayer)
+        {
+            switch (CollidedBlock)
+            {
+                case "TopDoor":
+                case "BottomDoor":
+                    Player.GetComponent<PlayerMovement>().Done = false;
                     break;
                 default: return;
             }

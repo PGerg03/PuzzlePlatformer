@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     public float MovePower;
     public float JumpPower = 35;
 
+    public bool Done = false;
     public bool Jump = false;
     public bool UnderWater => inWater();
     public bool Grounded => isGrounded();

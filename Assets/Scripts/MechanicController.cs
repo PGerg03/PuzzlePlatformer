@@ -118,7 +118,7 @@ public class MechanicController : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.layer != 0) return;
+        if (collision.gameObject.layer != 7) return;
 
         GameObject Player = collision.gameObject;
 

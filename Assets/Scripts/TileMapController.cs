@@ -72,7 +72,8 @@ public class TileMapController : MonoBehaviour
                 }
             }
         }
-
+        
+        StarObjects.Clear();
         StarObjects.AddRange(StarParrent.GetComponentsInChildren<StarController>());
         for (int i = 0; i < StarObjects.Count; i++)
         {
@@ -95,7 +96,7 @@ public class TileMapController : MonoBehaviour
         levelData.foregroundData = ForegroundController.instance.SaveForegroundTiles();
 
         string json = JsonUtility.ToJson(levelData, true);
-        File.WriteAllText(Application.dataPath + $"/Maps/{SaveName}.json", json);
+        File.WriteAllText(Application.streamingAssetsPath + $"/Maps/{SaveName}.json", json);
 
         Debug.Log($"Save Complete: /Maps/{SaveName}.json");
     }
@@ -105,9 +106,9 @@ public class TileMapController : MonoBehaviour
     public string LoadMap(int map, string type, StarCollection stars)
     {
         SaveName = $"{type}Level{map}";
-        if (!File.Exists(Application.dataPath + $"/Maps/{type}Level{map}.json")) return ""; // for Edit mode
+        if (!File.Exists(Application.streamingAssetsPath + $"/Maps/{type}Level{map}.json")) return ""; // for Edit mode
 
-        string json = File.ReadAllText(Application.dataPath + $"/Maps/{type}Level{map}.json");
+        string json = File.ReadAllText(Application.streamingAssetsPath + $"/Maps/{type}Level{map}.json");
         LevelData data = JsonUtility.FromJson<LevelData>(json);
 
         tilemap.ClearAllTiles();

@@ -30,12 +30,12 @@ Transform:
   m_GameObject: {fileID: 8431651057948852091}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 14.8, y: -26.5, z: 0}
+  m_LocalPosition: {x: -0.2, y: -29.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7921173697295533555
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -120,7 +120,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 1
-  m_Offset: {x: -0.004137039, y: -0.0033216476}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -131,7 +131,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.89243126, y: 2.035944}
+  m_Size: {x: 0.765, y: 2.01}
   m_EdgeRadius: 0
 --- !u!50 &8955926471201511745
 Rigidbody2D:
@@ -199,20 +199,20 @@ CompositeCollider2D:
   m_ColliderPaths:
   - m_Collider: {fileID: 257115029904926892}
     m_ColliderPaths:
-    - - X: 4420786
-        Y: 10146503
-      - X: -4503526
-        Y: 10146503
-      - X: -4503526
-        Y: -10212936
-      - X: 4420786
-        Y: -10212936
+    - - X: 3825001
+        Y: -10049999
+      - X: 3824998
+        Y: 10050001
+      - X: -3825001
+        Y: 10049999
+      - X: -3824998
+        Y: -10050001
   m_CompositePaths:
     m_Paths:
-    - - {x: 0.4420493, y: -1.0212936}
-      - {x: 0.4420493, y: 1.0146503}
-      - {x: -0.4503526, y: 1.014621}
-      - {x: -0.4503233, y: -1.0212936}
+    - - {x: -0.3824998, y: -1.0049708}
+      - {x: 0.3825001, y: -1.0049707}
+      - {x: 0.38247052, y: 1.0050001}
+      - {x: -0.3825001, y: 1.0049707}
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
