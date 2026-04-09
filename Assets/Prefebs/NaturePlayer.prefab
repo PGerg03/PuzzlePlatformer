@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9012474043237452454}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -15.5, y: -28, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
@@ -179,8 +179,9 @@ MonoBehaviour:
   JumpCode: 119
   MovePower: 0
   JumpPower: 25
+  Done: 0
   Jump: 0
-  LastContact: 0
+  LastContact: -1
   Ground_BoxSize: {x: 0.5, y: 0.1}
   Ground_CastDistance: 0.73
   LayerGround:

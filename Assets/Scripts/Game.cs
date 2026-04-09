@@ -432,6 +432,8 @@ public class Game : MonoBehaviour
         OptionsMenu(false);
     }
 
+    #endregion
+    #region InGame Functions
 
     public GameObject CreateNextPlayer(int number)
     {
@@ -457,9 +459,25 @@ public class Game : MonoBehaviour
                 return newPlayer;
         }
     }
-
-    #endregion
-    #region InGame Functions
+    public void DestroyPlayer(int number)
+    {
+        switch (number)
+        {
+            case 1:
+                DesertPlayerMovement = null;
+                Destroy(DesertPlayer);
+                DesertPlayer = null;
+                break;
+            case 2:
+                IcePlayerMovement = null;
+                Destroy(IcePlayer);
+                IcePlayer = null;
+                break;
+            case 3:
+            default:
+                break;
+        }
+    }
 
     // Complete Panel Functions
     public void CompleteLevel()

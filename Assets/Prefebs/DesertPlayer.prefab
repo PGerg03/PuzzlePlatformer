@@ -179,8 +179,9 @@ MonoBehaviour:
   JumpCode: 119
   MovePower: 0
   JumpPower: 25
+  Done: 0
   Jump: 0
-  LastContact: 0
+  LastContact: -1
   Ground_BoxSize: {x: 0.5, y: 0.1}
   Ground_CastDistance: 0.73
   LayerGround:

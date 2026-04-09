@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -116,6 +117,7 @@ public class MechanicController : MonoBehaviour
         if (color > 0) ActivateButton(activatedButton, color);
     }
 
+
     void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.layer != 7) return;
@@ -123,6 +125,7 @@ public class MechanicController : MonoBehaviour
         GameObject Player = collision.gameObject;
 
         int index = Player.GetComponent<PlayerMovement>().LastContact;
+        Player.GetComponent<PlayerMovement>().LastContact = -1;
         if (index < 0) return;
 
         string CollidedBlock = Buttons[index].button;
@@ -145,7 +148,7 @@ public class MechanicController : MonoBehaviour
                 break;
             default: return;
         }
-        if (color > 0) DeactivateButton(activatedButton, color);
+        if (color > 0) DeactivateButton(activatedButton, color, index);
     }
 
     public void ActivateButton(ButtonData activeButton, int color)
@@ -160,8 +163,14 @@ public class MechanicController : MonoBehaviour
         }
     }
 
-    public void DeactivateButton(ButtonData deactiveButton, int color)
+    public void DeactivateButton(ButtonData deactiveButton, int color, int buttonIndex)
     {
+        if (StillActiveGate(deactiveButton, buttonIndex, out bool same))
+        {
+            if (!same)
+                ChangeButtonStatus(deactiveButton.pos, color, false);
+            return;
+        }
         ChangeButtonStatus(deactiveButton.pos, color, false);
 
         for (int i = 0; i < deactiveButton.gatesIndex.Count; i++)
@@ -177,6 +186,29 @@ public class MechanicController : MonoBehaviour
     {
         if (active) tilemap.SetTile(pos, tiles[7 + color].tile);
         else tilemap.SetTile(pos, tiles[3 + color].tile);
+    }
+
+    public bool StillActiveGate(ButtonData button, int index, out bool same)
+    {
+        var Gates = button.gatesIndex;
+        bool active = false;
+        same = false;
+        if (GameScript.NaturePlayerMovement.LastContact != -1)
+        {
+            same |= GameScript.NaturePlayerMovement.LastContact == index;
+            active |= Gates.Any(i => Buttons[GameScript.NaturePlayerMovement.LastContact].gatesIndex.Contains(i));
+        }
+        if (!GameScript.DesertPlayer.IsUnityNull() && GameScript.DesertPlayerMovement.LastContact != -1)
+        {
+            same |= GameScript.DesertPlayerMovement.LastContact == index;
+            active |= Gates.Any(i => Buttons[GameScript.DesertPlayerMovement.LastContact].gatesIndex.Contains(i));
+        }
+        if (!GameScript.IcePlayer.IsUnityNull() && GameScript.IcePlayerMovement.LastContact != -1)
+        {
+            same |= GameScript.IcePlayerMovement.LastContact == index;
+            active |= Gates.Any(i => Buttons[GameScript.IcePlayerMovement.LastContact].gatesIndex.Contains(i));
+        }
+        return active;
     }
 
     #endregion

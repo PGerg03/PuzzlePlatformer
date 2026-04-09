@@ -72,7 +72,7 @@ public class TileMapController : MonoBehaviour
                 }
             }
         }
-        
+
         StarObjects.Clear();
         StarObjects.AddRange(StarParrent.GetComponentsInChildren<StarController>());
         for (int i = 0; i < StarObjects.Count; i++)
@@ -142,6 +142,13 @@ public class TileMapController : MonoBehaviour
             }
             Players[i].transform.localPosition = data.PlayersPos[i];
             Players[i].GetComponent<PlayerMovement>().LastContact = -1;
+            Players[i].GetComponent<PlayerMovement>().Active = false;
+        }
+        Players[0].GetComponent<PlayerMovement>().Active = true;
+        for (int i = data.PlayersPos.Count; data.PlayersPos.Count < Players.Count;)
+        {
+            GameScript.DestroyPlayer(i);
+            Players.RemoveAt(i);
         }
 
         return data.Story;
