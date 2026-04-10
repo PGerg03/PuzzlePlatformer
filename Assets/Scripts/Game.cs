@@ -362,7 +362,7 @@ public class Game : MonoBehaviour
     }
     public void ResetCurrentMap()
     {
-        TileMapController.instance.LoadMap(CurrentMap + 1, SinglePlayer ? "Single" : "Multy", SinglePlayer ? SinglePlayerStars[CurrentMap - 1] : MultiPlayerStars[CurrentMap - 1]);
+        TileMapController.instance.LoadMap(CurrentMap + 1, SinglePlayer ? "Single" : "Multy", SinglePlayer ? SinglePlayerStars[CurrentMap] : MultiPlayerStars[CurrentMap]);
 
         CompletePanel.SetActive(false);
         LostPanel.SetActive(false);
@@ -437,7 +437,7 @@ public class Game : MonoBehaviour
 
     public GameObject CreateNextPlayer(int number)
     {
-        GameObject newPlayer = new();
+        GameObject newPlayer;
         switch (number)
         {
             case 1:
@@ -456,7 +456,7 @@ public class Game : MonoBehaviour
                 return newPlayer;
             case 3:
             default:
-                return newPlayer;
+                return new();
         }
     }
     public void DestroyPlayer(int number)
@@ -485,7 +485,7 @@ public class Game : MonoBehaviour
         if (!NaturePlayerMovement.Done || (!DesertPlayerMovement.IsUnityNull() && !DesertPlayerMovement.Done) || (!IcePlayerMovement.IsUnityNull() && !IcePlayerMovement.Done))
             return;
 
-        if (SinglePlayer) SingleUnlockedMaps++;
+        if (SinglePlayer) SingleUnlockedMaps++; // Rework with stars
         else MultiUnlockedMaps++;
         SaveOptions();
 
