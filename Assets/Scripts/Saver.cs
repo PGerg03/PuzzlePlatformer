@@ -33,6 +33,11 @@ public class StarCollection
         get { return stars.Count; }
     }
 
+    public int Collected
+    {
+        get { return stars.Sum(); }
+    }
+
 }
 
 #endregion

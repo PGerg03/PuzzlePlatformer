@@ -31,6 +31,8 @@ public class Game : MonoBehaviour
     public bool SinglePlayer;
     public int CurrentMap;
     public string CurrentStory;
+    [SerializeField] private Text StarCounter;
+    public int StarCount => CountStars();
 
     [Header("Game")]
     [SerializeField] private Button[] MapButtons;
@@ -42,6 +44,8 @@ public class Game : MonoBehaviour
     [Header("MenuPause")]
     [SerializeField] private GameObject MenuPausePanel;
     [SerializeField] private GameObject MenuPauseMenu;
+    [SerializeField] private GameObject NotUnlockedPanel;
+    [SerializeField] private Text NotUnlockedText;
 
     [Header("Pause")]
     [SerializeField] private GameObject PausePanel;
@@ -85,7 +89,6 @@ public class Game : MonoBehaviour
     public PlayerMovement player2Movement;
 
     #endregion
-
     #region Load & Save
 
     void Awake()
@@ -117,7 +120,6 @@ public class Game : MonoBehaviour
 
     void Start()
     {
-        // TODO ellenőrzés / vizsgálat
         List<Dropdown.OptionData> res = new();
         for (int i = 0; i < Screen.resolutions.Count(); i++)
         {
@@ -149,6 +151,7 @@ public class Game : MonoBehaviour
         {
             map.SetActive(false);
         }
+        StarCounter.text = $"{StarCount}";
 
         if (SceneManager.GetActiveScene().buildIndex == 1) // Singleplayer
         {
@@ -191,6 +194,7 @@ public class Game : MonoBehaviour
         MenuPausePanel.SetActive(false);
         MenuPauseMenu.SetActive(false);
         MenuSettingsMenu.SetActive(false);
+        NotUnlockedPanel.SetActive(false);
 
     }
 
@@ -213,15 +217,19 @@ public class Game : MonoBehaviour
             }
             else // GameMenu
             {
-                if (PausePanel.activeSelf)
+                if (!NotUnlockedPanel.activeSelf)
                 {
-                    if (PauseMenu.activeSelf) MenuPause(false);
-                    if (MenuSettingsMenu.activeSelf) Back();
+                    if (PausePanel.activeSelf)
+                    {
+                        if (PauseMenu.activeSelf) MenuPause(false);
+                        if (MenuSettingsMenu.activeSelf) Back();
+                    }
+                    else
+                    {
+                        MenuPause(true);
+                    }
                 }
-                else
-                {
-                    MenuPause(true);
-                }
+                else OKNotUnlocked();
             }
         }
         if (Input.GetKeyDown(KeyCode.Space))
@@ -249,7 +257,7 @@ public class Game : MonoBehaviour
                 DesertPlayerMovement.Active = true;
                 if (!IcePlayer.IsUnityNull()) IcePlayerMovement.Active = false;
             }
-            if (CurrentMap > 4)
+            if (CurrentMap > 9)
             {
                 if (Input.GetKeyDown(KeyCode.Alpha3))
                 {
@@ -317,7 +325,7 @@ public class Game : MonoBehaviour
     // Story Functions
     public void LoadStory()
     {
-        if (Story == 2 || Story == 0 && SingleStoryCount < CurrentMap) // Always or First time
+        if (CurrentStory != "" && (Story == 2 || Story == 0 && SingleStoryCount < CurrentMap)) // Always or First time
         {
             StoryText.text = CurrentStory;
             StoryPanel.SetActive(true);
@@ -388,6 +396,19 @@ public class Game : MonoBehaviour
             map.SetActive(false);
         }
 
+        if (SinglePlayer)
+            for (int i = 0; i <= SingleUnlockedMaps && i < MapButtons.Count(); i++)
+            {
+                MapButtons[i].enabled = true;
+            }
+        else
+            for (int i = 0; i <= MultiUnlockedMaps && i < MapButtons.Count(); i++)
+            {
+                MapButtons[i].enabled = true;
+            }
+
+        StarCounter.text = $"{StarCount}";
+
         CurrentMap = -1;
         inGame = false;
     }
@@ -435,6 +456,7 @@ public class Game : MonoBehaviour
     #endregion
     #region InGame Functions
 
+    // Player Create / Destroy
     public GameObject CreateNextPlayer(int number)
     {
         GameObject newPlayer;
@@ -485,8 +507,32 @@ public class Game : MonoBehaviour
         if (!NaturePlayerMovement.Done || (!DesertPlayerMovement.IsUnityNull() && !DesertPlayerMovement.Done) || (!IcePlayerMovement.IsUnityNull() && !IcePlayerMovement.Done))
             return;
 
-        if (SinglePlayer) SingleUnlockedMaps++; // Rework with stars
-        else MultiUnlockedMaps++;
+        if (SinglePlayer)
+        {
+            switch (CurrentMap)
+            {
+                case 3:
+                    if (StarCount >= 6)
+                        SingleUnlockedMaps = Math.Max(SingleUnlockedMaps, CurrentMap + 1);
+                    break;
+                case 8:
+                    if (StarCount >= 20)
+                        SingleUnlockedMaps = Math.Max(SingleUnlockedMaps, CurrentMap + 1);
+                    break;
+                case 11:
+                    if (StarCount >= 30)
+                        SingleUnlockedMaps = Math.Max(SingleUnlockedMaps, CurrentMap + 1);
+                    break;
+                default:
+                    SingleUnlockedMaps = Math.Max(SingleUnlockedMaps, CurrentMap + 1);
+                    break;
+            }
+        }
+        else // Multyplayer
+        {
+            MultiUnlockedMaps = Math.Max(MultiUnlockedMaps, CurrentMap + 1);
+        }
+
         SaveOptions();
 
         PausePanel.SetActive(true);
@@ -507,14 +553,52 @@ public class Game : MonoBehaviour
         CurrentMap++;
         Maps[CurrentMap].SetActive(true);
 
-        CurrentStory = TileMapController.instance.LoadMap(CurrentMap + 1, SinglePlayer ? "Single" : "Multy", SinglePlayer ? SinglePlayerStars[CurrentMap] : MultiPlayerStars[CurrentMap]);
-
-        LoadStory();
+        if (CurrentMap > (SinglePlayer ? SingleUnlockedMaps : MultiUnlockedMaps))
+        {
+            NotUnlocked();
+        }
+        else
+        {
+            CurrentStory = TileMapController.instance.LoadMap(CurrentMap + 1, SinglePlayer ? "Single" : "Multy", SinglePlayer ? SinglePlayerStars[CurrentMap] : MultiPlayerStars[CurrentMap]);
+            LoadStory();
+        }
 
         CompletePanel.SetActive(false);
         PausePanel.SetActive(false);
     }
+    public void NotUnlocked()
+    {
+        int star = 0;
+        if (SinglePlayer)
+        {
+            switch (CurrentMap)
+            {
+                case 3:
+                    star = 6;
+                    break;
+                case 8:
+                    star = 20;
+                    break;
+                case 11:
+                    star = 30;
+                    break;
+            }
+        }
+        else // Multyplayer
+        {
 
+        }
+
+        NotUnlockedText.text = $"Nincs elég csillagod. A {CurrentMap + 1}. pálya feloldásához {star} csillag kell összesen!";
+        NotUnlockedPanel.SetActive(true);
+        ChangeToMainCamera();
+    }
+    public void OKNotUnlocked()
+    {
+        NotUnlockedPanel.SetActive(false);
+    }
+
+    // Star
     public void Collect(int starid)
     {
         if (SinglePlayer)
@@ -526,5 +610,13 @@ public class Game : MonoBehaviour
             MultiPlayerStars[CurrentMap][starid] = 1;
         }
     }
+    public int CountStars()
+    {
+        int stars = 0;
+        if (SinglePlayer) SinglePlayerStars.ForEach(s => stars += s.Collected);
+        else MultiPlayerStars.ForEach(s => stars += s.Collected);
+        return stars;
+    }
+
     #endregion
 }
