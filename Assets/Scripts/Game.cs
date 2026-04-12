@@ -509,19 +509,19 @@ public class Game : MonoBehaviour
 
         if (SinglePlayer)
         {
-            switch (CurrentMap)
+            switch (SingleUnlockedMaps)
             {
-                case 3:
+                case 2:
                     if (StarCount >= 6)
-                        SingleUnlockedMaps = Math.Max(SingleUnlockedMaps, CurrentMap + 1);
+                        SingleUnlockedMaps++;
                     break;
-                case 8:
+                case 7:
                     if (StarCount >= 20)
-                        SingleUnlockedMaps = Math.Max(SingleUnlockedMaps, CurrentMap + 1);
+                        SingleUnlockedMaps++;
                     break;
-                case 11:
+                case 10:
                     if (StarCount >= 30)
-                        SingleUnlockedMaps = Math.Max(SingleUnlockedMaps, CurrentMap + 1);
+                        SingleUnlockedMaps++;
                     break;
                 default:
                     SingleUnlockedMaps = Math.Max(SingleUnlockedMaps, CurrentMap + 1);
@@ -534,9 +534,9 @@ public class Game : MonoBehaviour
         }
 
         SaveOptions();
-
         PausePanel.SetActive(true);
-        CompletePanel.SetActive(true);
+        if (CurrentMap == 14) CompleteGame();
+        else CompletePanel.SetActive(true);
 
         inGame = false;
     }
@@ -597,7 +597,13 @@ public class Game : MonoBehaviour
     {
         NotUnlockedPanel.SetActive(false);
     }
-
+    public void CompleteGame()
+    {
+        NotUnlockedText.text = $"Teljesítetted a játékot! Gratulálok összesen {StarCount}db csillagot gyüjtöttél össze.";
+        NotUnlockedPanel.SetActive(true);
+        ChangeToMainCamera();
+    }
+    
     // Star
     public void Collect(int starid)
     {

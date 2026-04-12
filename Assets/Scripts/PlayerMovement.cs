@@ -82,6 +82,10 @@ public class PlayerMovement : MonoBehaviour
             }
             Jump = false;
         }
+        else
+        {
+            rg.velocity = new Vector2(0, rg.velocity.y);
+        }
     }
 
     public bool isGrounded()

@@ -145,7 +145,7 @@ public class TileMapController : MonoBehaviour
             Players[i].GetComponent<PlayerMovement>().Active = false;
         }
         Players[0].GetComponent<PlayerMovement>().Active = true;
-        for (int i = data.PlayersPos.Count; data.PlayersPos.Count < Players.Count;)
+        for (int i = Players.Count - 1; data.PlayersPos.Count < Players.Count; i--)
         {
             GameScript.DestroyPlayer(i);
             Players.RemoveAt(i);

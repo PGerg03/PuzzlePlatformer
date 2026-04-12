@@ -1,11 +1,11 @@
 {
-    "Volume": 0.20000000298023225,
+    "Volume": 0.2,
     "Resolution": 0,
     "WindowMode": 1,
     "StoryMode": 1,
-    "Single": 15,
+    "Single": 0,
     "Multi": 0,
-    "SingleStoryC": 10,
+    "SingleStoryC": 0,
     "MultiStoryC": 0,
     "SinglePStars": [
         {
@@ -80,9 +80,9 @@
         },
         {
             "stars": [
-                1,
-                1,
-                1
+                0,
+                0,
+                0
             ]
         },
         {
