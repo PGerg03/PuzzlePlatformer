@@ -3054,7 +3054,6 @@ GameObject:
   m_Component:
   - component: {fileID: 270718313}
   - component: {fileID: 270718314}
-  - component: {fileID: 270718315}
   m_Layer: 0
   m_Name: MapGrid
   m_TagString: Untagged
@@ -3097,21 +3096,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!114 &270718315
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 270718312}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa773b69f5148b545a06730873cc018b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MainTilemap: {fileID: 0}
-  SpecialTilemap: {fileID: 0}
-  specialTile: {fileID: 0}
 --- !u!1 &292216138
 GameObject:
   m_ObjectHideFlags: 0
@@ -39091,6 +39075,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 64979307}
     m_Modifications:
+    - target: {fileID: 6175297099296705039, guid: 446378f95314f974ca437eff8d205ab0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7910321728239281978, guid: 446378f95314f974ca437eff8d205ab0, type: 3}
       propertyPath: m_LocalPosition.x
       value: -15.5

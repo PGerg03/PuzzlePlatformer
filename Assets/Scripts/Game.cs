@@ -33,6 +33,7 @@ public class Game : MonoBehaviour
     public string CurrentStory;
     [SerializeField] private Text StarCounter;
     public int StarCount => CountStars();
+    public StarCollection newStars = new();
 
     [Header("Game")]
     [SerializeField] private Button[] MapButtons;
@@ -99,8 +100,8 @@ public class Game : MonoBehaviour
         WindowMode = 0;
         Resolution = 0;
 
-        SingleUnlockedMaps = 1;
-        MultiUnlockedMaps = 1;
+        SingleUnlockedMaps = 0;
+        MultiUnlockedMaps = -1;
 
         SingleStoryCount = 0;
         MultiStoryCount = 0;
@@ -153,6 +154,11 @@ public class Game : MonoBehaviour
         }
         StarCounter.text = $"{StarCount}";
 
+        MenuPausePanel.SetActive(false);
+        MenuPauseMenu.SetActive(false);
+        MenuSettingsMenu.SetActive(false);
+        NotUnlockedPanel.SetActive(false);
+        
         if (SceneManager.GetActiveScene().buildIndex == 1) // Singleplayer
         {
             Debug.Log("SinglePlayer");
@@ -165,7 +171,7 @@ public class Game : MonoBehaviour
             NaturePlayerMovement = NaturePlayer.GetComponent<PlayerMovement>();
             NaturePlayerMovement.PlayerAxes = "P1Horizontal";
             NaturePlayerMovement.JumpCode = KeyCode.W;
-            NaturePlayerMovement.Active = true;
+            NaturePlayerMovement.SetActive(true);
 
             Tilemap.GetComponent<TileMapController>().Players.Add(NaturePlayer);
         }
@@ -177,24 +183,13 @@ public class Game : MonoBehaviour
             {
                 MapButtons[i].enabled = true;
             }
-
-            player1Movement = Player1.GetComponent<PlayerMovement>();
-            player1Movement.PlayerAxes = "P1Horizontal";
-            player1Movement.JumpCode = KeyCode.W;
-            player1Movement.Active = true;
-            player2Movement = Player2.GetComponent<PlayerMovement>();
-            player2Movement.PlayerAxes = "P2Horizontal";
-            player2Movement.JumpCode = KeyCode.UpArrow;
-            player2Movement.Active = true;
-
-            Tilemap.GetComponent<TileMapController>().Players.Add(Player1);
-            Tilemap.GetComponent<TileMapController>().Players.Add(Player2);
+            if (MultiUnlockedMaps < 0)
+            {
+                NotUnlockedText.text = $"Előbb fel kell oldanod a második karaktert egyjátékosban. Ha megvan utána kezdheted el a többjátékos módot!";
+                NotUnlockedPanel.SetActive(true);
+            }
         }
 
-        MenuPausePanel.SetActive(false);
-        MenuPauseMenu.SetActive(false);
-        MenuSettingsMenu.SetActive(false);
-        NotUnlockedPanel.SetActive(false);
 
     }
 
@@ -247,23 +242,23 @@ public class Game : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                NaturePlayerMovement.Active = true;
-                DesertPlayerMovement.Active = false;
-                if (!IcePlayer.IsUnityNull()) IcePlayerMovement.Active = false;
+                NaturePlayerMovement.SetActive(true);
+                DesertPlayerMovement.SetActive(false);
+                if (!IcePlayer.IsUnityNull()) IcePlayerMovement.SetActive(false);
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                NaturePlayerMovement.Active = false;
-                DesertPlayerMovement.Active = true;
-                if (!IcePlayer.IsUnityNull()) IcePlayerMovement.Active = false;
+                NaturePlayerMovement.SetActive(false);
+                DesertPlayerMovement.SetActive(true);
+                if (!IcePlayer.IsUnityNull()) IcePlayerMovement.SetActive(false);
             }
             if (CurrentMap > 9)
             {
                 if (Input.GetKeyDown(KeyCode.Alpha3))
                 {
-                    NaturePlayerMovement.Active = false;
-                    DesertPlayerMovement.Active = false;
-                    IcePlayerMovement.Active = true;
+                    NaturePlayerMovement.SetActive(false);
+                    DesertPlayerMovement.SetActive(false);
+                    IcePlayerMovement.SetActive(true);
                 }
             }
         }
@@ -271,24 +266,12 @@ public class Game : MonoBehaviour
 
     void FixedUpdate()
     {
-        NaturePlayerMovement.enabled = inGame;
+        if (!NaturePlayer.IsUnityNull()) NaturePlayerMovement.enabled = inGame;
         if (!DesertPlayer.IsUnityNull()) DesertPlayerMovement.enabled = inGame;
         if (!IcePlayer.IsUnityNull()) IcePlayerMovement.enabled = inGame;
 
         if (!Player1.IsUnityNull()) player1Movement.enabled = inGame;
         if (!Player2.IsUnityNull()) player2Movement.enabled = inGame;
-
-        if (inGame)
-        {
-            if (SinglePlayer)
-            {
-
-            }
-            else // MultyPlayer
-            {
-
-            }
-        }
     }
 
     #endregion
@@ -370,6 +353,7 @@ public class Game : MonoBehaviour
     }
     public void ResetCurrentMap()
     {
+        newStars.Clear();
         TileMapController.instance.LoadMap(CurrentMap + 1, SinglePlayer ? "Single" : "Multy", SinglePlayer ? SinglePlayerStars[CurrentMap] : MultiPlayerStars[CurrentMap]);
 
         CompletePanel.SetActive(false);
@@ -406,6 +390,7 @@ public class Game : MonoBehaviour
             {
                 MapButtons[i].enabled = true;
             }
+        newStars.Clear();
 
         StarCounter.text = $"{StarCount}";
 
@@ -457,6 +442,41 @@ public class Game : MonoBehaviour
     #region InGame Functions
 
     // Player Create / Destroy
+
+    /// <summary>
+    /// number = 1 -> nature, desert, = 2 -> nature, ice, = 3 -> desert, ice
+    /// </summary>
+    /// <param name="number"></param>
+    /// <returns></returns>
+    public List<GameObject> MultyplayerCreate(int number)
+    {
+        switch (number)
+        {
+            case 1:
+                Player1 = Instantiate(PlayerModels[0], PlayersObject);
+                Player2 = Instantiate(PlayerModels[1], PlayersObject);
+                break;
+            case 2:
+                Player1 = Instantiate(PlayerModels[0], PlayersObject);
+                Player2 = Instantiate(PlayerModels[2], PlayersObject);
+                break;
+            case 3:
+                Player1 = Instantiate(PlayerModels[1], PlayersObject);
+                Player2 = Instantiate(PlayerModels[2], PlayersObject);
+                break;
+        }
+
+        player1Movement = Player1.GetComponent<PlayerMovement>();
+        player1Movement.PlayerAxes = "P1Horizontal";
+        player1Movement.JumpCode = KeyCode.W;
+        player1Movement.SetActive(true);
+        player2Movement = Player2.GetComponent<PlayerMovement>();
+        player2Movement.PlayerAxes = "P2Horizontal";
+        player2Movement.JumpCode = KeyCode.UpArrow;
+        player2Movement.SetActive(true);
+
+        return new List<GameObject>() { Player1, Player2 };
+    }
     public GameObject CreateNextPlayer(int number)
     {
         GameObject newPlayer;
@@ -496,7 +516,12 @@ public class Game : MonoBehaviour
                 IcePlayer = null;
                 break;
             case 3:
-            default:
+                player1Movement = null;
+                Destroy(Player1);
+                Player1 = null;
+                player2Movement = null;
+                Destroy(Player2);
+                Player2 = null;
                 break;
         }
     }
@@ -504,16 +529,17 @@ public class Game : MonoBehaviour
     // Complete Panel Functions
     public void CompleteLevel()
     {
-        if (!NaturePlayerMovement.Done || (!DesertPlayerMovement.IsUnityNull() && !DesertPlayerMovement.Done) || (!IcePlayerMovement.IsUnityNull() && !IcePlayerMovement.Done))
-            return;
-
         if (SinglePlayer)
         {
+            if (!NaturePlayerMovement.Done || (!DesertPlayerMovement.IsUnityNull() && !DesertPlayerMovement.Done) || (!IcePlayerMovement.IsUnityNull() && !IcePlayerMovement.Done))
+                return;
+
             switch (SingleUnlockedMaps)
             {
                 case 2:
                     if (StarCount >= 6)
                         SingleUnlockedMaps++;
+                    MultiUnlockedMaps = Math.Max(MultiUnlockedMaps, 0);
                     break;
                 case 7:
                     if (StarCount >= 20)
@@ -530,8 +556,35 @@ public class Game : MonoBehaviour
         }
         else // Multyplayer
         {
-            MultiUnlockedMaps = Math.Max(MultiUnlockedMaps, CurrentMap + 1);
+            if (!player1Movement.Done || !player2Movement.Done)
+                return;
+
+            switch (MultiUnlockedMaps)
+            {
+                case 4:
+                    if (SingleUnlockedMaps > 10)
+                        MultiUnlockedMaps++;
+                    break;
+                default:
+                    MultiUnlockedMaps = Math.Max(MultiUnlockedMaps, CurrentMap + 1);
+                    break;
+            }
+
         }
+
+        if (SinglePlayer)
+        {
+            SinglePlayerStars[CurrentMap][0] += newStars[0];
+            SinglePlayerStars[CurrentMap][1] += newStars[1];
+            SinglePlayerStars[CurrentMap][2] += newStars[2];
+        }
+        else
+        {
+            MultiPlayerStars[CurrentMap][0] += newStars[0];
+            MultiPlayerStars[CurrentMap][1] += newStars[1];
+            MultiPlayerStars[CurrentMap][2] += newStars[2];
+        }
+        newStars.Clear();
 
         SaveOptions();
         PausePanel.SetActive(true);
@@ -544,6 +597,8 @@ public class Game : MonoBehaviour
     {
         PausePanel.SetActive(true);
         LostPanel.SetActive(true);
+
+        newStars.Clear();
 
         inGame = false;
     }
@@ -583,13 +638,13 @@ public class Game : MonoBehaviour
                     star = 30;
                     break;
             }
+            NotUnlockedText.text = $"Nincs elég csillagod. A {CurrentMap + 1}. pálya feloldásához {star} csillag kell összesen!";
         }
         else // Multyplayer
         {
-
+            NotUnlockedText.text = $"Még nem oldottad fel a {CurrentMap + 1}. pályához szükséges karaktert. Haladj tovább egyjátékosban!";
         }
 
-        NotUnlockedText.text = $"Nincs elég csillagod. A {CurrentMap + 1}. pálya feloldásához {star} csillag kell összesen!";
         NotUnlockedPanel.SetActive(true);
         ChangeToMainCamera();
     }
@@ -603,18 +658,11 @@ public class Game : MonoBehaviour
         NotUnlockedPanel.SetActive(true);
         ChangeToMainCamera();
     }
-    
+
     // Star
     public void Collect(int starid)
     {
-        if (SinglePlayer)
-        {
-            SinglePlayerStars[CurrentMap][starid] = 1;
-        }
-        else
-        {
-            MultiPlayerStars[CurrentMap][starid] = 1;
-        }
+        newStars[starid] = 1;
     }
     public int CountStars()
     {

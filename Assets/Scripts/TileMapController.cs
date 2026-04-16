@@ -133,22 +133,37 @@ public class TileMapController : MonoBehaviour
         BackgroundController.instance.LoadBackTiles(data.backgroundData);
         ForegroundController.instance.LoadFroregroundTiles(data.foregroundData);
 
-        Players.ForEach(p => p.transform.localPosition = new Vector3Int(0, 50, 0));
-        for (int i = 0; i < data.PlayersPos.Count; i++)
+        if (GameScript.SinglePlayer)
         {
-            if (Players.Count == i)
+            Players.ForEach(p => p.transform.localPosition = new Vector3Int(0, 50, 0));
+            for (int i = 0; i < data.PlayersPos.Count; i++)
             {
-                Players.Add(GameScript.CreateNextPlayer(i));
+                if (Players.Count == i)
+                {
+                    Players.Add(GameScript.CreateNextPlayer(i));
+                }
+                Players[i].transform.localPosition = data.PlayersPos[i];
+                Players[i].GetComponent<PlayerMovement>().LastContact = -1;
+                Players[i].GetComponent<PlayerMovement>().SetActive(false);
             }
-            Players[i].transform.localPosition = data.PlayersPos[i];
-            Players[i].GetComponent<PlayerMovement>().LastContact = -1;
-            Players[i].GetComponent<PlayerMovement>().Active = false;
+            Players[0].GetComponent<PlayerMovement>().SetActive(true);
+            for (int i = Players.Count - 1; data.PlayersPos.Count < Players.Count; i--)
+            {
+                GameScript.DestroyPlayer(i);
+                Players.RemoveAt(i);
+            }
         }
-        Players[0].GetComponent<PlayerMovement>().Active = true;
-        for (int i = Players.Count - 1; data.PlayersPos.Count < Players.Count; i--)
+        else
         {
-            GameScript.DestroyPlayer(i);
-            Players.RemoveAt(i);
+            GameScript.DestroyPlayer(3);
+            Players.Clear();
+
+            int number = map > 9 ? 3 : map > 4 ? 2 : 1;
+
+            Players.AddRange(GameScript.MultyplayerCreate(number));
+            
+            Players[0].transform.localPosition = data.PlayersPos[0];
+            Players[1].transform.localPosition = data.PlayersPos[1];
         }
 
         return data.Story;

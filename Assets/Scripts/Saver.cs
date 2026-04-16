@@ -27,15 +27,18 @@ public class StarCollection
         get { return stars[x]; }
         set { stars[x] = value; }
     }
-
     public int Count
     {
         get { return stars.Count; }
     }
-
     public int Collected
     {
         get { return stars.Sum(); }
+    }
+
+    public void Clear()
+    {
+        stars.Clear();
     }
 
 }

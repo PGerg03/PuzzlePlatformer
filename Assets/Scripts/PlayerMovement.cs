@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     private SpriteRenderer sr;
     [SerializeField] private Sprite RightModel;
     [SerializeField] private Sprite LeftModel;
+    [SerializeField] private GameObject Pointer;
     public PlayerType Type;
     public bool Active = false;
 
@@ -86,6 +87,12 @@ public class PlayerMovement : MonoBehaviour
         {
             rg.velocity = new Vector2(0, rg.velocity.y);
         }
+    }
+    
+    public void SetActive(bool active)
+    {
+        Active = active;
+        Pointer.SetActive(!active);
     }
 
     public bool isGrounded()
