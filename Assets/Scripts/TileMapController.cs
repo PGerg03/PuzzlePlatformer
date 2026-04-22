@@ -158,7 +158,7 @@ public class TileMapController : MonoBehaviour
             GameScript.DestroyPlayer(3);
             Players.Clear();
 
-            int number = map > 9 ? 3 : map > 4 ? 2 : 1;
+            int number = map > 10 ? 3 : map > 5 ? 2 : 1;
 
             Players.AddRange(GameScript.MultyplayerCreate(number));
             

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,6 +22,10 @@ public class MenuController : MonoBehaviour
     [SerializeField] private Slider MainSoundSlider;
     [SerializeField] private Dropdown Windowmodedropdown;
     [SerializeField] private Dropdown Resolutiondropdown;
+
+    [SerializeField] private GameObject PlayerPanel;
+    [SerializeField] private Sprite[] Background;
+    [SerializeField] private Sprite[] Players;
     #endregion
     private Game game;
 
@@ -45,7 +48,7 @@ public class MenuController : MonoBehaviour
         Resolutiondropdown.value = game.Resolution;
         int WindowMode = (int)game.WindowMode;
         Windowmodedropdown.value = WindowMode == 3 ? 2 : WindowMode;
-        
+
         string[] seged = Resolutiondropdown.options[game.Resolution].text.Split('x');
         int[] screensize =
         {
@@ -72,16 +75,13 @@ public class MenuController : MonoBehaviour
                 ButtonInfoText.text = "";
                 break;
             case "Play":
-                ButtonInfoText.text = "A Játék gombon van az egér!";
+                ButtonInfoText.text = "Játék indítása. Válassz játékmódot a játék kezdése előtt.";
                 break;
             case "Settings":
-                ButtonInfoText.text = "A Beállítások gombon van az egér!";
-                break;
-            case "Placeholder":
-
+                ButtonInfoText.text = "Beállításokban módosítható a felbontás, az ablak mód és a hangerő.";
                 break;
             case "Exit":
-                ButtonInfoText.text = "A Kilépés gombon van az egér!";
+                ButtonInfoText.text = "Kilépés a játékból.";
                 break;
         }
     }
@@ -139,8 +139,26 @@ public class MenuController : MonoBehaviour
         Screen.SetResolution(screensize[0], screensize[1], game.WindowMode);
     }
 
-    void Update()
+    int timer = 0;
+    void FixedUpdate()
     {
+        timer++;
 
+        if (timer >= 600)
+        {
+            timer = 0;
+            gameObject.GetComponent<Image>().sprite = Background[2];
+            PlayerPanel.GetComponent<SpriteRenderer>().sprite = Players[2];
+        }
+        else if (timer == 400)
+        {
+            gameObject.GetComponent<Image>().sprite = Background[1];
+            PlayerPanel.GetComponent<SpriteRenderer>().sprite = Players[1];
+        }
+        else if (timer == 200)
+        {
+            gameObject.GetComponent<Image>().sprite = Background[0];
+            PlayerPanel.GetComponent<SpriteRenderer>().sprite = Players[0];
+        }
     }
 }

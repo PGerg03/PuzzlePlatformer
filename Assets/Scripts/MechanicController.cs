@@ -193,7 +193,7 @@ public class MechanicController : MonoBehaviour
         var Gates = button.gatesIndex;
         bool active = false;
         same = false;
-        if (GameScript.NaturePlayerMovement.LastContact != -1)
+        if (!GameScript.NaturePlayer.IsUnityNull() && GameScript.NaturePlayerMovement.LastContact != -1)
         {
             same |= GameScript.NaturePlayerMovement.LastContact == index;
             active |= Gates.Any(i => Buttons[GameScript.NaturePlayerMovement.LastContact].gatesIndex.Contains(i));
@@ -207,6 +207,16 @@ public class MechanicController : MonoBehaviour
         {
             same |= GameScript.IcePlayerMovement.LastContact == index;
             active |= Gates.Any(i => Buttons[GameScript.IcePlayerMovement.LastContact].gatesIndex.Contains(i));
+        }
+        if (!GameScript.Player1.IsUnityNull() && GameScript.player1Movement.LastContact != -1)
+        {
+            same |= GameScript.player1Movement.LastContact == index;
+            active |= Gates.Any(i => Buttons[GameScript.player1Movement.LastContact].gatesIndex.Contains(i));
+        }
+        if (!GameScript.Player2.IsUnityNull() && GameScript.player2Movement.LastContact != -1)
+        {
+            same |= GameScript.player2Movement.LastContact == index;
+            active |= Gates.Any(i => Buttons[GameScript.player2Movement.LastContact].gatesIndex.Contains(i));
         }
         return active;
     }

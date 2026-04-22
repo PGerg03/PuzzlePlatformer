@@ -39,6 +39,7 @@ public class StarCollection
     public void Clear()
     {
         stars.Clear();
+        stars.AddRange(new List<int>() { 0, 0, 0 });
     }
 
 }

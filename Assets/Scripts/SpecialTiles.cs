@@ -72,26 +72,23 @@ public class SpecialTiles : MonoBehaviour
         }
         string CollidedBlock = LoadadSpecialTiles[index].tile;
 
-        if (GameScript.SinglePlayer)
+        switch (CollidedBlock)
         {
-            switch (CollidedBlock)
-            {
-                case "TopDoor":
-                case "BottomDoor":
-                    Player.GetComponent<PlayerMovement>().Done = true;
-                    GameScript.CompleteLevel();
-                    break;
-                case "JumpPad":
-                    JumpPadJump(Player);
-                    break;
-                case "TopSpike":
-                case "BottomSpike":
-                case "LeftSpike":
-                case "RightSpike":
-                    SpikeHit();
-                    break;
-                default: return;
-            }
+            case "TopDoor":
+            case "BottomDoor":
+                Player.GetComponent<PlayerMovement>().Done = true;
+                GameScript.CompleteLevel();
+                break;
+            case "JumpPad":
+                JumpPadJump(Player);
+                break;
+            case "TopSpike":
+            case "BottomSpike":
+            case "LeftSpike":
+            case "RightSpike":
+                SpikeHit();
+                break;
+            default: return;
         }
     }
 
