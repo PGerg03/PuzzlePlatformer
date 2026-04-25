@@ -1016,7 +1016,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 417675930}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: SettingsChange
+        m_MethodName: WindowModeChange
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1203,10 +1203,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -1225,13 +1225,13 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 963194227}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 50
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
+  m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -1354,7 +1354,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 417675930}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: SettingsChange
+        m_MethodName: ResolutionChange
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1940,6 +1940,7 @@ MonoBehaviour:
   SinglePlayerStars: []
   MultiPlayerStars: []
   Tilemap: {fileID: 0}
+  tilemapGridTransform: {fileID: 0}
   inGame: 0
   SinglePlayer: 0
   CurrentMap: 0

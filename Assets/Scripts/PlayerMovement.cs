@@ -52,7 +52,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Active)
         {
-            if (Input.GetKey(JumpCode) && Grounded)
+            if (Input.GetKeyDown(JumpCode) && Grounded)
             {
                 Jump = true;
             }

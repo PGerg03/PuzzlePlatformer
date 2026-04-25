@@ -1,7 +1,7 @@
 {
     "Volume": 0.5,
-    "Resolution": 0,
-    "WindowMode": 1,
+    "Resolution": 1,
+    "WindowMode": 3,
     "StoryMode": 1,
     "Single": 2,
     "Multi": 15,

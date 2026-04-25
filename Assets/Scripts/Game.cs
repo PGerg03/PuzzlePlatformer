@@ -27,6 +27,7 @@ public class Game : MonoBehaviour
     public List<StarCollection> SinglePlayerStars = new();
     public List<StarCollection> MultiPlayerStars = new();
     [SerializeField] private Tilemap Tilemap;
+    [SerializeField] Transform tilemapGridTransform;
     public bool inGame;
     public bool SinglePlayer;
     public int CurrentMap;
@@ -97,7 +98,7 @@ public class Game : MonoBehaviour
         Debug.Log("Game Awake");
 
         MainVolume = 0.5f;
-        WindowMode = 0;
+        WindowMode = (FullScreenMode)1;
         Resolution = 0;
 
         SingleUnlockedMaps = 0;
@@ -122,10 +123,19 @@ public class Game : MonoBehaviour
     void Start()
     {
         List<Dropdown.OptionData> res = new();
+        string distinct = Screen.resolutions[0].ToString().Split('@')[1].Trim();
         for (int i = 0; i < Screen.resolutions.Count(); i++)
         {
-            Dropdown.OptionData data = new(Screen.resolutions[i].ToString().Split('@')[0]);
-            res.Add(data);
+            string[] darabok = Screen.resolutions[i].ToString().Split('@');
+            if (darabok[1].Trim() != distinct)
+                continue;
+            Dropdown.OptionData data = new(darabok[0]);
+            darabok = data.text.Split('x');
+            double ratio = Convert.ToDouble(darabok[0]) / Convert.ToDouble(darabok[1]);
+            if (Math.Abs(ratio - (16f / 9f)) < 0.01f)
+            {
+                res.Add(data);
+            }
         }
         res.Reverse();
 
@@ -158,7 +168,7 @@ public class Game : MonoBehaviour
         MenuPauseMenu.SetActive(false);
         MenuSettingsMenu.SetActive(false);
         NotUnlockedPanel.SetActive(false);
-        
+
         if (SceneManager.GetActiveScene().buildIndex == 1) // Singleplayer
         {
             Debug.Log("SinglePlayer");
@@ -167,6 +177,7 @@ public class Game : MonoBehaviour
             {
                 MapButtons[i].enabled = true;
             }
+            MapStars();
 
             NaturePlayerMovement = NaturePlayer.GetComponent<PlayerMovement>();
             NaturePlayerMovement.PlayerAxes = "P1Horizontal";
@@ -190,6 +201,7 @@ public class Game : MonoBehaviour
             }
         }
 
+        ScaleTilemapGrid();
 
     }
 
@@ -304,7 +316,40 @@ public class Game : MonoBehaviour
 
         LoadStory();
     }
-
+    public void MapStars()
+    {
+        for (int i = 0; i < MapButtons.Count(); i++)
+        {
+            var stars = MapButtons[i].GetComponentsInChildren<SpriteRenderer>();
+            Color original = stars[0].color;
+            Color fade = original;
+            original.a = 1f;
+            fade.a = 0.5f;
+            switch (SinglePlayer ? SinglePlayerStars[i].Collected : MultiPlayerStars[i].Collected)
+            {
+                case 0:
+                    stars[0].color = fade;
+                    stars[1].color = fade;
+                    stars[2].color = fade;
+                    break;
+                case 1:
+                    stars[0].color = original;
+                    stars[1].color = fade;
+                    stars[2].color = fade;
+                    break;
+                case 2:
+                    stars[0].color = original;
+                    stars[1].color = original;
+                    stars[2].color = fade;
+                    break;
+                case 3:
+                    stars[0].color = original;
+                    stars[1].color = original;
+                    stars[2].color = original;
+                    break;
+            }
+        }
+    }
     // Story Functions
     public void LoadStory()
     {
@@ -379,6 +424,7 @@ public class Game : MonoBehaviour
         {
             map.SetActive(false);
         }
+        MapStars();
 
         if (SinglePlayer)
             for (int i = 0; i <= SingleUnlockedMaps && i < MapButtons.Count(); i++)
@@ -428,6 +474,15 @@ public class Game : MonoBehaviour
         };
 
         Screen.SetResolution(screensize[0], screensize[1], WindowMode);
+        ScaleTilemapGrid();
+    }
+
+    void ScaleTilemapGrid()
+    {
+        float currentWidth = Screen.width;
+        float scaleFactor = currentWidth / 1920f;
+
+        // tilemapGridTransform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
     }
     public void StorySetting(int v)
     {

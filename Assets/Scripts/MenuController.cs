@@ -31,13 +31,23 @@ public class MenuController : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("MenuStart");
         game = gameObject.GetComponent<Game>();
 
         List<Dropdown.OptionData> res = new();
+        string distinct = Screen.resolutions[0].ToString().Split('@')[1].Trim();
         for (int i = 0; i < Screen.resolutions.Count(); i++)
         {
-            Dropdown.OptionData data = new(Screen.resolutions[i].ToString().Split('@')[0]);
-            res.Add(data);
+            string[] darabok = Screen.resolutions[i].ToString().Split('@');
+            if (darabok[1].Trim() != distinct)
+                continue;
+            Dropdown.OptionData data = new(darabok[0]);
+            darabok = data.text.Split('x');
+            double ratio = Convert.ToDouble(darabok[0]) / Convert.ToDouble(darabok[1]);
+            if (Math.Abs(ratio - (16f / 9f)) < 0.01f)
+            {
+                res.Add(data);
+            }
         }
         res.Reverse();
 
@@ -124,11 +134,18 @@ public class MenuController : MonoBehaviour
     {
         game.MainVolume = v;
     }
-    public void SettingsChange(int v)
+    public void ResolutionChange(int v)
     {
-        game.WindowMode = (FullScreenMode)(Windowmodedropdown.value == 2 ? 3 : Windowmodedropdown.value);
-        game.Resolution = Resolutiondropdown.value;
-
+        game.Resolution = v;
+        SettingsChange();
+    }
+    public void WindowModeChange(int v)
+    {
+        game.WindowMode = (FullScreenMode)(v == 2 ? 3 : v);
+        SettingsChange();
+    }
+    public void SettingsChange()
+    {
         string[] seged = Resolutiondropdown.options[game.Resolution].text.Split('x');
         int[] screensize =
         {

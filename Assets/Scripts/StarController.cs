@@ -1,7 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+
+[System.Serializable]
+public class StarCollection
+{
+    public List<int> stars = new() { 0, 0, 0 };
+
+    public int this[int x]
+    {
+        get { return stars[x]; }
+        set { stars[x] = value; }
+    }
+    public int Count
+    {
+        get { return stars.Count; }
+    }
+    public int Collected
+    {
+        get { return stars.Sum(); }
+    }
+
+    public void Clear()
+    {
+        stars.Clear();
+        stars.AddRange(new List<int>() { 0, 0, 0 });
+    }
+
+}
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class StarController : MonoBehaviour
