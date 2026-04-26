@@ -13,6 +13,7 @@ public class MenuController : MonoBehaviour
     [SerializeField] private Button Placeholder;
     [SerializeField] private Button ExitButton;
     [SerializeField] private Text ButtonInfoText;
+    [SerializeField] private AudioSource Music;
 
     [SerializeField] private GameObject PlayMenu;
     [SerializeField] private Button Singleplayer;
@@ -55,6 +56,7 @@ public class MenuController : MonoBehaviour
         Resolutiondropdown.AddOptions(res);
 
         MainSoundSlider.value = game.MainVolume;
+        Music.volume = game.MainVolume;
         Resolutiondropdown.value = game.Resolution;
         int WindowMode = (int)game.WindowMode;
         Windowmodedropdown.value = WindowMode == 3 ? 2 : WindowMode;
@@ -133,6 +135,7 @@ public class MenuController : MonoBehaviour
     public void SettingsChange(float v)
     {
         game.MainVolume = v;
+        Music.volume = v;
     }
     public void ResolutionChange(int v)
     {

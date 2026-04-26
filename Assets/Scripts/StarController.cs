@@ -34,7 +34,7 @@ public class StarCollection
 [RequireComponent(typeof(SpriteRenderer))]
 public class StarController : MonoBehaviour
 {
-    private int ID = -1;
+    public int ID = -1;
     public Game game;
     public bool collected = false;
 

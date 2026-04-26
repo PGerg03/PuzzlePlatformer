@@ -18,6 +18,7 @@ public class Game : MonoBehaviour
     public FullScreenMode WindowMode;
     public int Resolution;
     public int Story;
+    [SerializeField] private AudioSource Music;
 
     [Header("inGame")]
     public int SingleUnlockedMaps;
@@ -93,7 +94,7 @@ public class Game : MonoBehaviour
     #endregion
     #region Load & Save
 
-    void Awake()
+    public void Awake()
     {
         Debug.Log("Game Awake");
 
@@ -111,6 +112,11 @@ public class Game : MonoBehaviour
 
         // Load if exists
         if (File.Exists("Options.json")) Saver.ReadOptionsFile("Options.json", this);
+        else
+        {
+            SaveOptions();
+            Saver.ReadOptionsFile("Options.json", this);
+        }
     }
     public void SaveOptions()
     {
@@ -120,7 +126,7 @@ public class Game : MonoBehaviour
     #endregion
     #region Main
 
-    void Start()
+    public void Start()
     {
         List<Dropdown.OptionData> res = new();
         string distinct = Screen.resolutions[0].ToString().Split('@')[1].Trim();
@@ -142,6 +148,7 @@ public class Game : MonoBehaviour
         Resolutiondropdown.ClearOptions();
         Resolutiondropdown.AddOptions(res);
         MainSoundSlider.value = MainVolume;
+        Music.volume = MainVolume;
         Windowmodedropdown.value = (int)WindowMode == 3 ? 2 : (int)WindowMode;
         Resolutiondropdown.value = Resolution;
         StoryOptions.value = Story;
@@ -177,7 +184,6 @@ public class Game : MonoBehaviour
             {
                 MapButtons[i].enabled = true;
             }
-            MapStars();
 
             NaturePlayerMovement = NaturePlayer.GetComponent<PlayerMovement>();
             NaturePlayerMovement.PlayerAxes = "P1Horizontal";
@@ -200,9 +206,7 @@ public class Game : MonoBehaviour
                 NotUnlockedPanel.SetActive(true);
             }
         }
-
-        ScaleTilemapGrid();
-
+        MapStars();
     }
 
     void Update()
@@ -453,6 +457,7 @@ public class Game : MonoBehaviour
     public void SettingsChange(float v)
     {
         MainVolume = v;
+        Music.volume = v;
     }
     public void ResolutionChange(int v)
     {
@@ -474,16 +479,8 @@ public class Game : MonoBehaviour
         };
 
         Screen.SetResolution(screensize[0], screensize[1], WindowMode);
-        ScaleTilemapGrid();
     }
 
-    void ScaleTilemapGrid()
-    {
-        float currentWidth = Screen.width;
-        float scaleFactor = currentWidth / 1920f;
-
-        // tilemapGridTransform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
-    }
     public void StorySetting(int v)
     {
         Story = v;
