@@ -357,7 +357,7 @@ public class Game : MonoBehaviour
     // Story Functions
     public void LoadStory()
     {
-        if (CurrentStory != "" && (Story == 2 || Story == 0 && SingleStoryCount < CurrentMap)) // Always or First time
+        if (CurrentStory != "" && (Story == 2 || Story == 0 && SingleStoryCount < CurrentMap + 1)) // Always or First time
         {
             StoryText.text = CurrentStory;
             StoryPanel.SetActive(true);
@@ -367,8 +367,8 @@ public class Game : MonoBehaviour
             StoryOk();
         }
 
-        if (SinglePlayer) SingleStoryCount = Math.Max(SingleStoryCount, CurrentMap);
-        else MultiStoryCount = Math.Max(MultiStoryCount, CurrentMap);
+        if (SinglePlayer) SingleStoryCount = Math.Max(SingleStoryCount, CurrentMap + 1);
+        else MultiStoryCount = Math.Max(MultiStoryCount, CurrentMap + 1);
     }
     public void StoryOk()
     {
