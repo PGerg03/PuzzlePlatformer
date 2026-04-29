@@ -10,6 +10,9 @@ using UnityEngine.UI;
 public class MechanicController : MonoBehaviour
 {
     #region Variables
+    private static readonly int OpenHash = Animator.StringToHash("Open");
+    private static readonly int CloseHash = Animator.StringToHash("Close");
+
     [SerializeField] Game GameScript;
     [SerializeField] Tilemap tilemap;
     [SerializeField] List<CustomTile> tiles = new();
@@ -117,7 +120,6 @@ public class MechanicController : MonoBehaviour
         if (color > 0) ActivateButton(activatedButton, color);
     }
 
-
     void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.layer != 7) return;
@@ -158,8 +160,8 @@ public class MechanicController : MonoBehaviour
         for (int i = 0; i < activeButton.gatesIndex.Count; i++)
         {
             int index = activeButton.gatesIndex[i];
-            GateObjects[index].GetComponent<Animator>().SetBool("Open", true);
-            GateObjects[index].GetComponent<Animator>().SetBool("Close", false);
+            GateObjects[index].GetComponent<Animator>().SetBool(OpenHash, true);
+            GateObjects[index].GetComponent<Animator>().SetBool(CloseHash, false);
         }
     }
 
@@ -176,8 +178,8 @@ public class MechanicController : MonoBehaviour
         for (int i = 0; i < deactiveButton.gatesIndex.Count; i++)
         {
             int index = deactiveButton.gatesIndex[i];
-            GateObjects[index].GetComponent<Animator>().SetBool("Close", true);
-            GateObjects[index].GetComponent<Animator>().SetBool("Open", false);
+            GateObjects[index].GetComponent<Animator>().SetBool(CloseHash, true);
+            GateObjects[index].GetComponent<Animator>().SetBool(OpenHash, false);
         }
     }
 

@@ -164,7 +164,6 @@ public class Game : MonoBehaviour
         if (!SceneLoader.Instance.IsUnityNull())
             SceneLoader.Instance.LoadFinished();
 
-
         foreach (GameObject map in Maps)
         {
             map.SetActive(false);
@@ -250,7 +249,10 @@ public class Game : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            if (CompletePanel.activeSelf || LostPanel.activeSelf || PauseMenu.activeSelf) ResetCurrentMap();
+            if (CompletePanel.activeSelf ||
+                LostPanel.activeSelf ||
+                PauseMenu.activeSelf)
+                    ResetCurrentMap();
         }
 
         // Karakter váltás
@@ -260,13 +262,15 @@ public class Game : MonoBehaviour
             {
                 NaturePlayerMovement.SetActive(true);
                 DesertPlayerMovement.SetActive(false);
-                if (!IcePlayer.IsUnityNull()) IcePlayerMovement.SetActive(false);
+                if (!IcePlayer.IsUnityNull())
+                    IcePlayerMovement.SetActive(false);
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 NaturePlayerMovement.SetActive(false);
                 DesertPlayerMovement.SetActive(true);
-                if (!IcePlayer.IsUnityNull()) IcePlayerMovement.SetActive(false);
+                if (!IcePlayer.IsUnityNull())
+                    IcePlayerMovement.SetActive(false);
             }
             if (CurrentMap > 9)
             {
